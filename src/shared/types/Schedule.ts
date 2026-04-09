@@ -1,13 +1,26 @@
-export type RepeatType = 'once' | 'daily' | 'weekly' | 'custom'
+export type RepeatType = 'once' | 'daily' | 'every_x_days' |'weekly' | 'monthly'
 
 export interface Schedule {
     id: string
     productId: string
-    time: string
+    times: string[]
     repeatType: RepeatType
+    everyXDays?: number
     daysOfWeek?: number[]
-    startDate: string
-    endDate?: string
+    dayOfMonth?: number
+    startDate: number
+    endDate?: number
     createdAt: number
     updatedAt: number
+}
+
+export interface ScheduleDraft {
+    productId: string
+    times: string[]
+    repeatType: RepeatType
+    everyXDays?: number
+    daysOfWeek?: number[]
+    dayOfMonth?: number
+    startDate: number
+    endDate?: number
 }
