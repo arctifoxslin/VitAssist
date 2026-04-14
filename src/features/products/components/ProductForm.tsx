@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
-import { Button, TextInput, Text } from "react-native-paper";
-import { FormUnitTypes, Product, ProductDraft } from "../../../shared/types/Product";
+import { AppText } from "../../../shared/ui/AppText";
+import { AppInput } from "../../../shared/ui/AppInput";
+import { AppButton } from "../../../shared/ui/AppButton";
+import { FormUnitTypes, ProductDraft } from "../../../shared/types/Product";
 
 interface Props {
     initialDraft?: ProductDraft
@@ -17,7 +19,7 @@ export const ProductForm = ({ initialDraft: initialDraft, onSubmit }: Props) => 
     const [notes, setNotes] = useState('')
 
     useEffect(() => {
-        if(initialDraft) {
+        if (initialDraft) {
             setName(initialDraft.name)
             setDosage(initialDraft.dosage)
             setTotalUnits(initialDraft.totalUnits.toString())
@@ -38,42 +40,44 @@ export const ProductForm = ({ initialDraft: initialDraft, onSubmit }: Props) => 
         })
     }
 
-    return(
+    return (
         <View style={{ gap: 16 }}>
-            <Text variant='titleMedium'>
+            <AppText variant='h2'>
                 Название
-            </Text>
-            <TextInput
+            </AppText>
+            <AppInput
                 value={name}
                 onChangeText={setName}
             />
-            <Text variant='titleMedium'>
+            <AppText variant='h2'>
                 Дозировка
-            </Text>
-            <TextInput
+            </AppText>
+            <AppInput
                 value={dosage}
                 onChangeText={setDosage}
             />
-            <Text variant='titleMedium'>
+            <AppText variant='h2'>
                 Количество
-            </Text>
-            <TextInput
+            </AppText>
+            <AppInput
                 value={totalUnits}
                 onChangeText={setTotalUnits}
                 keyboardType="numeric"
             />
-            <Text variant='titleMedium'>
+            <AppText variant='h2'>
                 Примечание
-            </Text>
-            <TextInput
+            </AppText>
+            <AppInput
                 value={notes}
                 onChangeText={setNotes}
                 multiline
             />
 
-            <Button mode="contained" onPress={handleSubmit}>
-                Сохранить
-            </Button>
+            <AppButton
+                title="Сохранить"
+                variant="primary"
+                onPress={handleSubmit}
+            />
         </View>
     )
 

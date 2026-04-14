@@ -9,7 +9,10 @@ const Stack = createNativeStackNavigator<ProductsNavigationStack>()
 
 const ProductsNavigationMap = () => {
     return (
-        <Stack.Navigator>
+        <Stack.Navigator 
+            screenOptions={{ headerShown: false }}
+            initialRouteName='ProductsList'
+        >
             <Stack.Screen
                 name="ProductsList"
                 component={ProductListScreen}

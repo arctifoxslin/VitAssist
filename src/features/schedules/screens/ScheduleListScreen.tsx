@@ -3,14 +3,15 @@ import { View, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { ScheduleCard } from "../components/ScheduleCard";
-import { FAB } from "react-native-paper";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
+import { useNavigation } from "@react-navigation/native";
+import { Fab } from "../../../shared/ui/Fab";
 
-type Props = NativeStackScreenProps<SchedulesNavigationStack, 'ScheduleList'>
+type Navigation = NativeStackNavigationProp<SchedulesNavigationStack, 'ScheduleList'>
 
-export const ScheduleListScreen = ({ navigation }: Props) => {
-
+export const ScheduleListScreen = () => {
+    const navigation = useNavigation<Navigation>()
     const schedules = useSelector(
         (state: RootState) => state.schedules.list
     )
@@ -21,21 +22,16 @@ export const ScheduleListScreen = ({ navigation }: Props) => {
                 data={schedules}
                 keyExtractor={(item) => item.id}
                 contentContainerStyle={{ padding: 16, gap: 12 }}
-                renderItem={({item}) => (
+                renderItem={({ item }) => (
                     <ScheduleCard
                         schedule={item}
-                        onPress={() => navigation.navigate('AddSchedule', {id: item.id})}
+                        onPress={() => navigation.navigate('AddSchedule', { id: item.id })}
                     />
                 )}
             />
 
-            <FAB
+            <Fab
                 icon="plus"
-                style={{
-                    position: "absolute",
-                    bottom: 24,
-                    right: 24,
-                }}
                 onPress={() => navigation.navigate('AddSchedule', {})}
             />
         </View>

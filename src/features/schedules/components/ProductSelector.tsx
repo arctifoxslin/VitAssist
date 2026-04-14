@@ -1,42 +1,48 @@
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
-import { Menu, Button } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton";
+import { View } from "react-native";
+import { AnimatedMenuIcon } from "../../../shared/ui/AnimatedMenuIcon";
 
 interface Props {
     value: string | null
     onChange: (productId: string) => void
+    openDropdown: (
+        items: { label: string, onPress: () => void }[],
+        position: { x: number, y: number }
+    ) => void
+    dropdownOpen: boolean
 }
 
-export const ProductSelector = ({ value, onChange }: Props) => {
+export const ProductSelector = ({ value, onChange, openDropdown, dropdownOpen }: Props) => {
     const products = useSelector((state: RootState) => state.products.list)
-    const [visible, setVisible] = useState(false)
-
+    const buttonRef = useRef<View>(null)
     const selected = products.find(p => p.id === value)
 
+    const toggleMenu = () => {
+        buttonRef.current?.measure((fx, fy, width, height, px, py) => {
+            openDropdown(
+                products.map(p => ({
+                    label: p.name,
+                    onPress: () => onChange(p.id)
+                })),
+                {
+                    x: px + width / 2,
+                    y: py + height
+                }
+            )
+        })
+    }
+
     return (
-        <Menu
-            visible={visible}
-            onDismiss={() => setVisible(false)}
-            anchor={
-                <Button
-                    mode='outlined'
-                    onPress={() => setVisible(true)}
-                >
-                    {selected? selected.name : 'Выберите препарат'}
-                </Button>
-            }
-        >
-            {products.map(p => (
-                <Menu.Item
-                    key={p.id}
-                    onPress={() => {
-                        onChange(p.id)
-                        setVisible(false)
-                    }}
-                    title={p.name}
-                />
-            ))}
-        </Menu>
+        <View ref={buttonRef}>
+            <AppButton
+                title={selected ? selected.name : "Выберите препарат"}
+                variant="secondary"
+                onPress={toggleMenu}
+                rightElement={<AnimatedMenuIcon open={dropdownOpen} />}
+            />
+        </View>
     )
 }

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import { Button, Text } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { lockModal, unlockModal, isModalLocked } from "../../../shared/utils/modalLock";
 
 interface Props {
     startDate: number
@@ -13,42 +14,67 @@ export const DateRangePicker = ({ startDate, endDate, onChange }: Props) => {
     const [showStart, setShowStart] = useState(false)
     const [showEnd, setShowEnd] = useState(false)
 
+    const openStartPicker = () => {
+        if (isModalLocked()) {
+            return
+        }
+        lockModal()
+        setShowStart(true)
+    }
+
+    const openEndPicker = () => {
+        if (isModalLocked()) {
+            return
+        }
+        lockModal()
+        setShowEnd(true)
+    }
+
+    const closeStartPicker = () => {
+        setShowStart(false)
+        unlockModal()
+    }
+
+    const closeEndPicker = () => {
+        setShowEnd(false)
+        unlockModal()
+    }
+
     return (
         <View style={{ gap: 12 }}>
-            <Button
-                mode='outlined'
-                onPress={() => setShowStart(true)}
-            >
-                Начало: {new Date(startDate).toLocaleDateString()}
-            </Button>
+            <AppButton
+                title={`Начало: ${new Date(startDate).toLocaleDateString()}`}
+                variant='secondary'
+                onPress={openStartPicker}
+            />
             {showStart && (
                 <DateTimePicker
                     mode='date'
                     value={new Date(startDate)}
                     onChange={(_, date) => {
-                        if(date) {
+                        if (date) {
                             onChange(date.getTime(), endDate)
                         }
-                        setShowStart(false)
+                        closeStartPicker()
                     }}
                 />
             )}
 
-            <Button
-                mode='outlined'
-                onPress={() => setShowEnd(true)}
-            >
-                Окончание: {endDate? new Date(endDate).toLocaleDateString() : '-'}
-            </Button>
+            <AppButton
+                title={`Окончание: ${endDate ? new Date(endDate).toLocaleDateString() : '-'}`}
+                variant='secondary'
+                onPress={openEndPicker}
+            />
             {showEnd && (
                 <DateTimePicker
                     mode='date'
-                    value={endDate? new Date(endDate) : new Date()}
+                    value={endDate ? new Date(endDate) : new Date(startDate)}
+                    minimumDate={new Date(startDate)}
                     onChange={(_, date) => {
-                        if(date) {
+                        if (date) {
                             onChange(startDate, date.getTime())
                         }
-                        setShowEnd(false)
+                        closeEndPicker()
                     }}
                 />
             )}

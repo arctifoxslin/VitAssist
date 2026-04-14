@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { View } from "react-native";
-import { Button, Chip } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton";
+import { AppChip } from "../../../shared/ui/AppChip";
 import DateTimePicker from "@react-native-community/datetimepicker"
+import { lockModal, unlockModal, isModalLocked } from "../../../shared/utils/modalLock";
 
 interface Props {
     times: string[]
@@ -11,13 +13,26 @@ interface Props {
 export const TimePickerList = ({ times, onChange }: Props) => {
     const [showPicker, setShowPicker] = useState(false)
 
+    const openPicker = () => {
+        if (isModalLocked()) {
+            return
+        }
+        lockModal()
+        setShowPicker(true)
+    }
+
+    const closePicker = () => {
+        setShowPicker(false)
+        unlockModal()
+    }
+
     const handleAddTime = (event: any, date?: Date) => {
-        if(date) {
+        if (date) {
             const hh = date.getHours().toString().padStart(2, '0')
             const mm = date.getMinutes().toString().padStart(2, '0')
             onChange([...times, `${hh}:${mm}`])
         }
-        setShowPicker(false)
+        closePicker()
     }
 
     return (
@@ -28,20 +43,18 @@ export const TimePickerList = ({ times, onChange }: Props) => {
                 gap: 8
             }}>
                 {times.map((t, i) => (
-                    <Chip
+                    <AppChip
                         key={i}
+                        label={t}
                         onClose={() => onChange(times.filter((_, idx) => idx !== i))}
-                    >
-                        {t}
-                    </Chip>
+                    />
                 ))}
             </View>
-            <Button
-                mode='outlined'
-                onPress={() => setShowPicker(true)}
-            >
-                Добавить время
-            </Button>
+            <AppButton
+                title="Добавить время"
+                variant='secondary'
+                onPress={openPicker}
+            />
             {showPicker && (
                 <DateTimePicker
                     mode='time'

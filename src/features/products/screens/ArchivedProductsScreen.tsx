@@ -1,31 +1,27 @@
 import React from "react";
 import { View, FlatList } from "react-native";
-import { useDispatch, UseDispatch, useSelector } from "react-redux";
-import { Button, Text } from "react-native-paper";
+import { useDispatch, useSelector } from "react-redux";
+import { AppText } from "../../../shared/ui/AppText";
+import { AppButton } from "../../../shared/ui/AppButton";
 import { RootState } from "../../../app/store/store";
 import { unarchiveProduct } from "../productsSlice";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ProductsNavigationStack } from "../ProductsNavigationStack";
 
-
-type Props = NativeStackScreenProps<ProductsNavigationStack, 'ArchivedProducts'>
-
-export const ArchivedProductsScreen = ({ navigation }: Props) => {
+export const ArchivedProductsScreen = () => {
     const dispatch = useDispatch()
 
-    const archivedProducts = useSelector((state: RootState) => 
+    const archivedProducts = useSelector((state: RootState) =>
         state.products.list.filter(p => p.archived)
     )
     const handleUnarchive = (id: string) => {
         dispatch(unarchiveProduct(id))
     }
 
-    if(archivedProducts.length === 0){
+    if (archivedProducts.length === 0) {
         return (
             <View style={{ padding: 16 }}>
-                <Text variant='bodyLarge'>
+                <AppText variant='body'>
                     Архив пуст
-                </Text>
+                </AppText>
             </View>
         )
     }
@@ -34,29 +30,28 @@ export const ArchivedProductsScreen = ({ navigation }: Props) => {
             contentContainerStyle={{ padding: 16, gap: 16 }}
             data={archivedProducts}
             keyExtractor={(item) => item.id}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
                 <View style={{
                     padding: 16,
                     borderRadius: 12,
                     backgroundColor: "#f2f2f2",
                     gap: 8
                 }}>
-                    <Text variant='titleMedium'>
+                    <AppText variant='h2'>
                         {item.name}
-                    </Text>
+                    </AppText>
                     {item.notes && (
-                        <Text variant='bodyMedium' style={{ opacity: 0.7 }}>
+                        <AppText variant='body' style={{ opacity: 0.7 }}>
                             {item.notes}
-                        </Text>
+                        </AppText>
                     )}
 
-                    <Button
-                        mode='contained-tonal'
+                    <AppButton
+                        title="Вернуть в список"
+                        variant='primary'
                         onPress={() => handleUnarchive(item.id)}
-                    >
-                        Вернуть в список
-                    </Button>
-                </View>  
+                    />
+                </View>
             )}
         />
     )

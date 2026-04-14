@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { Button } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addSchedule, updateSchedule, removeSchedule } from "../schedulesSlice";
 import { Schedule, ScheduleDraft } from "../../../shared/types/Schedule";
@@ -9,6 +9,7 @@ import { ScheduleForm } from "../components/ScheduleFrom";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
 import { RootState } from "../../../app/store/store";
+import { notificationService } from "../../notifications/NotificationService";
 
 type Props = NativeStackScreenProps<SchedulesNavigationStack, 'AddSchedule'>
 
@@ -23,6 +24,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
 
     const initialDraft: ScheduleDraft | undefined = existSchedule ? {
         productId: existSchedule.productId,
+        dose: existSchedule.dose,
         times: existSchedule.times,
         repeatType: existSchedule.repeatType,
         everyXDays: existSchedule.everyXDays,
@@ -32,7 +34,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         endDate: existSchedule.endDate,
     } : undefined
 
-    const handleSubmit = (draft: ScheduleDraft) => {
+    const handleSubmit = async (draft: ScheduleDraft) => {
         const schedule: Schedule = {
             ...draft,
             id: editId ?? uuid.v4().toString(),
@@ -40,20 +42,23 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
             updatedAt: Date.now(),
         }
 
-        if(existSchedule){
+        if (existSchedule) {
             dispatch(updateSchedule(schedule))
+            await notificationService.updateScheduleNotifications(schedule)
         } else {
             dispatch(addSchedule(schedule))
+            await notificationService.scheduleNotification(schedule)
         }
 
         navigation.goBack()
     }
 
-    const handleDelete = () => {
-        if(!editId){
+    const handleDelete = async () => {
+        if (!editId) {
             return
         }
         dispatch(removeSchedule(editId))
+        await notificationService.cancelScheduleNotifications(editId)
         navigation.goBack()
     }
 
@@ -62,13 +67,11 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
             <ScheduleForm initialDraft={initialDraft} onSubmit={handleSubmit} />
 
             {editId && (
-                <Button
-                    mode='contained-tonal'
+                <AppButton
+                    title="Удалить расписание"
+                    variant='primary'
                     onPress={handleDelete}
-                    style={{ marginTop: 16 }}
-                >
-                    Удалить расписание
-                </Button>
+                />
             )}
         </View>
     )

@@ -1,11 +1,11 @@
-export type IntakeStatus = 'taken' | 'skipped' | 'missed'
+export type IntakeStatus = 'taken' | 'skipped' | 'delayed'
 
-export interface Intale {
+export interface Intake {
     id: string
     productId: string
     scheduleId: string
-    date: string
     time: string
+    plannedFor: number
     status: IntakeStatus
     createdAt: number
 }

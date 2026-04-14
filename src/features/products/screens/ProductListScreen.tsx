@@ -4,23 +4,26 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { ProductCard } from "../components/ProductCard";
 import { AddProductButton } from "../components/AddProductButton";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProductsNavigationStack } from "../ProductsNavigationStack";
-import { Button } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton"
+import { useNavigation } from "@react-navigation/native";
 
-type Props = NativeStackScreenProps<ProductsNavigationStack, 'ProductsList'>
+type Navigation = NativeStackNavigationProp<ProductsNavigationStack, 'ProductsList'>
 
-export const ProductListScreen = ({ navigation }: Props) => {
-    const products = useSelector((state: RootState) => 
+export const ProductListScreen = () => {
+    const navigation = useNavigation<Navigation>()
+    const products = useSelector((state: RootState) =>
         state.products.list.filter(p => !p.archived)
     )
 
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <Button onPress={() => navigation.navigate("ArchivedProducts")}>
-                    Архива
-                </Button>
+                <AppButton
+                    title="Архив"
+                    onPress={() => navigation.navigate("ArchivedProducts")}
+                />
             ),
         })
     }, [navigation])
@@ -30,9 +33,9 @@ export const ProductListScreen = ({ navigation }: Props) => {
             <ScrollView style={{ padding: 16 }}>
                 {products.map(p => (
                     <ProductCard
-                        key = {p.id}
+                        key={p.id}
                         product={p}
-                        onPress={() => {}}
+                        onPress={() => { }}
                     />
                 ))}
             </ScrollView>

@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { Button } from "react-native-paper";
+import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, updateProduct, archiveProduct } from "../productsSlice";
 import { Product, ProductDraft } from "../../../shared/types/Product";
@@ -12,7 +12,7 @@ import uuid from "react-native-uuid";
 
 type Props = NativeStackScreenProps<ProductsNavigationStack, 'AddProduct'>
 
-export const AddProductScreen =({ navigation, route }: Props) => {
+export const AddProductScreen = ({ navigation, route }: Props) => {
     const dispatch = useDispatch()
 
     const editId = route.params?.id
@@ -40,35 +40,33 @@ export const AddProductScreen =({ navigation, route }: Props) => {
             updatedAt: Date.now(),
         }
 
-        if(existProduct){
+        if (existProduct) {
             dispatch(updateProduct(product))
         } else {
             dispatch(addProduct(product))
         }
-        
+
         navigation.goBack()
     }
 
     const handleArchive = () => {
-        if(!editId) {
+        if (!editId) {
             return
         }
         dispatch(archiveProduct(editId))
         navigation.goBack()
     }
 
-    return(
+    return (
         <View style={{ padding: 16 }}>
             <ProductForm initialDraft={initialDraft} onSubmit={handleSubmit} />
-            
+
             {editId && (
-                <Button
-                    mode='contained-tonal'
+                <AppButton
+                    title="Архивировать"
+                    variant='primary'
                     onPress={handleArchive}
-                    style={{ marginTop: 16 }}
-                >
-                    Архивировать
-                </Button>
+                />
             )}
         </View>
     )

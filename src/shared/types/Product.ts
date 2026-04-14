@@ -6,7 +6,7 @@ export interface Product {
     dosage: string
     form: FormUnitTypes
     totalUnits?: number
-    remainingUnits?: number
+    remainingUnits: number
     unitType?: FormUnitTypes
     color?: string
     icon?: string

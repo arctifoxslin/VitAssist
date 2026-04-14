@@ -1,6 +1,5 @@
 import React from "react";
-import { View } from "react-native";
-import { RadioButton, Text } from "react-native-paper";
+import { AppRadioGroup } from "../../../shared/ui/AppRadioGroup";
 import { RepeatType } from "../../../shared/types/Schedule";
 
 interface Props {
@@ -10,17 +9,16 @@ interface Props {
 
 export const RepeatSelector = ({ value, onChange }: Props) => {
     return (
-        <RadioButton.Group
-            onValueChange={(value) => onChange(value as RepeatType)}
+        <AppRadioGroup
             value={value}
-        >
-            <View style={{  gap: 8 }}>
-                <RadioButton.Item label="Один раз" value="once" />
-                <RadioButton.Item label="Каждый день" value="daily" />
-                <RadioButton.Item label="Через N дней" value="every_x_days" />
-                <RadioButton.Item label="По дням недели" value="weekly" />
-                <RadioButton.Item label="Раз в месяц" value="monthly" />
-            </View>
-        </RadioButton.Group>
+            onChange={(value) => onChange(value as RepeatType)}
+            options={[
+                { label: "Один раз", value: "once" },
+                { label: "Каждый день", value: "daily" },
+                { label: "Через N дней", value: "every_x_days" },
+                { label: "По дням недели", value: "weekly" },
+                { label: "Раз в месяц", value: "monthly" },
+            ]}
+        />
     )
 }

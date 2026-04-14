@@ -8,7 +8,10 @@ const Stack = createNativeStackNavigator<SchedulesNavigationStack>()
 
 const SchedulesNavigationMap = () => {
     return(
-        <Stack.Navigator initialRouteName='ScheduleList'>
+        <Stack.Navigator
+            screenOptions={{headerShown: false}}
+            initialRouteName='ScheduleList'
+        >
             <Stack.Screen
                 name='ScheduleList'
                 component={ScheduleListScreen}

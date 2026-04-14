@@ -1,5 +1,5 @@
 import React from "react";
-import { FAB } from "react-native-paper";
+import { Fab } from "../../../shared/ui/Fab";
 
 interface Props {
     onPress: () => void
@@ -7,13 +7,8 @@ interface Props {
 
 export const AddProductButton = ({ onPress }: Props) => {
     return (
-        <FAB
+        <Fab
             icon="plus"
-            style={{
-                position: "absolute",
-                bottom: 24,
-                right: 24,
-            }}
             onPress={onPress}
         />
     )
