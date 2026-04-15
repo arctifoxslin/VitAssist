@@ -8,4 +8,5 @@ export const TYPOGRAPHY = {
 
   body: { fontSize: 15, fontWeight: '400' },
   small: { fontSize: 13, fontWeight: '400' },
+  caption: { fontSize: 13, fontWeight: '400' }
 } as const

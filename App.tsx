@@ -14,7 +14,7 @@ import { navigationRef } from './src/app/navigation/NavigationRef';
 export default function App() {
   useEffect(() => {
     notificationService.reqestPermissions()
-    notificationService.createChannel
+    notificationService.createChannel()
     notificationService.onPressNotification((data) => {
       console.log("Notification pressed: ", data)
       navigationRef.current?.navigate("IntakeNavigationMap", {
@@ -24,7 +24,6 @@ export default function App() {
           time: data.time!,
         }
       })
-      //navigation.navigate("IntakeScreen", {scheduleId: data.scheduleId})
     })
   }, [])
 

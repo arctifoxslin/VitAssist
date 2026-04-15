@@ -9,16 +9,21 @@ import { TimePickerList } from "./TimePickerList";
 import { RepeatSelector } from "./RepeatSelector";
 import { WeeklySelector } from "./WeeklySelector";
 import { DateRangePicker } from "./DateRangePicker";
-import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
+import { DropdownItem } from "../../../shared/ui/DropdownMenu";
 
 interface Props {
     initialDraft?: ScheduleDraft
     onSubmit: (draft: ScheduleDraft) => void
+    openDropdown: (
+        items: DropdownItem[],
+        position: { x: number, y: number }
+    ) => void
+    dropdownOpen: boolean
 }
 
-export const ScheduleForm = ({ initialDraft, onSubmit }: Props) => {
+export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpen }: Props) => {
     const [productId, setProductId] = useState<string | null>(null)
-    const [dose, setDose] = useState<string>("1")
+    const [dosage, setDosage] = useState("1")
     const [times, setTimes] = useState<string[]>([])
     const [repeatType, setRepeatType] = useState<RepeatType>('daily')
 
@@ -29,27 +34,10 @@ export const ScheduleForm = ({ initialDraft, onSubmit }: Props) => {
     const [startDate, setStartDate] = useState(Date.now())
     const [endDate, setEndDate] = useState<number | undefined>(undefined)
 
-    const [dropdownVisible, setDropdownVisible] = useState(false)
-    const [dropdownItem, setDropdownItem] = useState<DropdownItem[]>([])
-    const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 })
-
-    const openDropdown = (
-        items: DropdownItem[],
-        position: { x: number, y: number }
-    ) => {
-        setDropdownItem(items)
-        setDropdownPosition(position)
-        setDropdownVisible(true)
-    }
-
-    const closeDropdown = () => {
-        setDropdownVisible(false)
-    }
-
     useEffect(() => {
         if (initialDraft) {
             setProductId(initialDraft.productId)
-            setDose(initialDraft.dose?.toString() ?? "1")
+            setDosage(initialDraft.dosage?.toString() ?? "1")
             setTimes(initialDraft.times)
             setRepeatType(initialDraft.repeatType)
             setEveryxDays(initialDraft.everyXDays?.toString() ?? "2")
@@ -64,7 +52,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit }: Props) => {
         if (!productId) {
             return false
         }
-        if (!dose || Number(dose) <= 0) {
+        if (!dosage || Number(dosage) <= 0) {
             return false
         }
         if (times.length === 0) {
@@ -97,7 +85,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit }: Props) => {
 
         onSubmit({
             productId,
-            dose: Number(dose),
+            dosage: Number(dosage),
             times,
             repeatType,
             everyXDays: repeatType === 'every_x_days'
@@ -115,109 +103,99 @@ export const ScheduleForm = ({ initialDraft, onSubmit }: Props) => {
     }
 
     return (
-        <>
-            <ScrollView contentContainerStyle={{ padding: 16, gap: 24 }}>
-                {/*Product*/}
-                <View>
-                    <AppText variant='h2'>
-                        Препарат
-                    </AppText>
-                    <ProductSelector
-                        value={productId}
-                        onChange={setProductId}
-                        openDropdown={openDropdown}
-                        dropdownOpen={dropdownVisible}
-                    />
-                </View>
-
-                {/*Invoke Time*/}
-                <View>
-                    <AppText variant='h2'>
-                        Время приёма
-                    </AppText>
-                    <TimePickerList times={times} onChange={setTimes} />
-                </View>
-
-                {/*Repeat type*/}
-                <View>
-                    <AppText variant='h2'>
-                        Напоминание
-                    </AppText>
-                    <RepeatSelector value={repeatType} onChange={setRepeatType} />
-                </View>
-
-                {/*Conditional on Repeat Type*/}
-                {repeatType === 'every_x_days' && (
-                    <AppInput
-                        label="Каждые N дней"
-                        value={everyXDays}
-                        onChangeText={setEveryxDays}
-                        keyboardType='numeric'
-                    />
-                )}
-
-                {repeatType === 'weekly' && (
-                    <View>
-                        <AppText variant='h2'>
-                            Дни недели
-                        </AppText>
-                        <WeeklySelector value={daysOfWeek} onChange={setDaysOfWeek} />
-                    </View>
-                )}
-
-                {repeatType === 'monthly' && (
-                    <AppInput
-                        label="День месяца"
-                        value={dayOfMonth}
-                        onChangeText={setDayOfMonth}
-                        keyboardType='numeric'
-                    />
-                )}
-
-                {/*Date Range*/}
-                <View>
-                    <AppText variant='h2'>
-                        Период
-                    </AppText>
-                    <DateRangePicker
-                        startDate={startDate}
-                        endDate={endDate}
-                        onChange={(start, end) => {
-                            setStartDate(start)
-                            setEndDate(end)
-                        }}
-                    />
-                </View>
-
-                {/*Set Dose*/}
-                <View>
-                    <AppText variant='h2'>
-                        Разовая дозировка
-                    </AppText>
-                    <AppInput
-                        label="Количество единиц"
-                        value={dose}
-                        onChangeText={setDose}
-                        keyboardType="numeric"
-                    />
-                </View>
-
-                {/*Save Button*/}
-                <AppButton
-                    title="Сохранить"
-                    variant='primary'
-                    onPress={handleSubmit}
-                    disabled={!isValid()}
+        <ScrollView contentContainerStyle={{ gap: 24 }}>
+            {/*Product*/}
+            <View>
+                <AppText variant='h2'>
+                    Препарат
+                </AppText>
+                <ProductSelector
+                    value={productId}
+                    onChange={setProductId}
+                    openDropdown={openDropdown}
+                    dropdownOpen={dropdownOpen}
                 />
-            </ScrollView>
+            </View>
 
-            {/*Dropdown Menu*/}
-            <DropdownMenu
-                visible={dropdownVisible}
-                items={dropdownItem}
-                position={dropdownPosition}
-                onClose={closeDropdown}
+            {/*Invoke Time*/}
+            <View>
+                <AppText variant='h2'>
+                    Время приёма
+                </AppText>
+                <TimePickerList times={times} onChange={setTimes} />
+            </View>
+
+            {/*Repeat type*/}
+            <View>
+                <AppText variant='h2'>
+                    Напоминание
+                </AppText>
+                <RepeatSelector value={repeatType} onChange={setRepeatType} />
+            </View>
+
+            {/*Conditional on Repeat Type*/}
+            {repeatType === 'every_x_days' && (
+                <AppInput
+                    label="Каждые N дней"
+                    value={everyXDays}
+                    onChangeText={setEveryxDays}
+                    keyboardType='numeric'
+                />
+            )}
+
+            {repeatType === 'weekly' && (
+                <View>
+                    <AppText variant='h2'>
+                        Дни недели
+                    </AppText>
+                    <WeeklySelector value={daysOfWeek} onChange={setDaysOfWeek} />
+                </View>
+            )}
+
+            {repeatType === 'monthly' && (
+                <AppInput
+                    label="День месяца"
+                    value={dayOfMonth}
+                    onChangeText={setDayOfMonth}
+                    keyboardType='numeric'
+                />
+            )}
+
+            {/*Date Range*/}
+            <View>
+                <AppText variant='h2'>
+                    Период
+                </AppText>
+                <DateRangePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    onChange={(start, end) => {
+                        setStartDate(start)
+                        setEndDate(end)
+                    }}
+                />
+            </View>
+
+            {/*Set Dose*/}
+            <View>
+                <AppText variant='h2'>
+                    Разовая дозировка
+                </AppText>
+                <AppInput
+                    label="Количество единиц"
+                    value={dosage}
+                    onChangeText={setDosage}
+                    keyboardType="numeric"
+                />
+            </View>
+
+            {/*Save Button*/}
+            <AppButton
+                title="Сохранить"
+                variant='primary'
+                onPress={handleSubmit}
+                disabled={!isValid()}
             />
-        </>
+        </ScrollView>
     )
 }

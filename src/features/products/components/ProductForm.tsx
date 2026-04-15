@@ -1,21 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppInput } from "../../../shared/ui/AppInput";
 import { AppButton } from "../../../shared/ui/AppButton";
-import { FormUnitTypes, ProductDraft } from "../../../shared/types/Product";
+import { ProductDraft } from "../../../shared/types/Product";
+import { FormUnitType, UnitType, UNIT_TYPES_BY_FORM } from "../../../shared/types/units";
+import { UnitTypeSelector } from "./UnitTypeSelector";
+import { FormSelector } from "./FormSelector";
+import { DropdownItem } from "../../../shared/ui/DropdownMenu";
+import { isCountableUnit } from "../../../shared/types/countableUnits";
 
 interface Props {
     initialDraft?: ProductDraft
     onSubmit: (draft: ProductDraft) => void
+    openDropdown: (
+        owner: 'form' | 'unitType',
+        items: DropdownItem[],
+        position: { x: number, y: number }
+    ) => void
+    dropdownOpen: boolean
+    dropdownOwner: 'form' | 'unitType' | null
 }
 
-export const ProductForm = ({ initialDraft: initialDraft, onSubmit }: Props) => {
+export const ProductForm = ({
+    initialDraft: initialDraft,
+    onSubmit,
+    openDropdown,
+    dropdownOpen,
+    dropdownOwner,
+}: Props) => {
     const [name, setName] = useState('')
     const [dosage, setDosage] = useState('')
     const [totalUnits, setTotalUnits] = useState('')
-    const [unitType, setUnitType] = useState<FormUnitTypes>('pill')
-    const [form, setForm] = useState<FormUnitTypes>('pill')
+    const [unitType, setUnitType] = useState<UnitType>('pill')
+    const [form, setForm] = useState<FormUnitType>('pill')
     const [notes, setNotes] = useState('')
 
     useEffect(() => {
@@ -29,6 +47,21 @@ export const ProductForm = ({ initialDraft: initialDraft, onSubmit }: Props) => 
         }
     }, [initialDraft])
 
+    const isValid = () => {
+        if (!name.trim()) return false
+        if (!dosage.trim()) return false
+
+        const units = Number(totalUnits)
+        if (!units || units <= 0) return false
+
+        return true
+    }
+
+    const handleFormChange = (newForm: FormUnitType) => {
+        setForm(newForm)
+        setUnitType(UNIT_TYPES_BY_FORM[newForm][0])
+    }
+
     const handleSubmit = () => {
         onSubmit({
             name,
@@ -40,46 +73,93 @@ export const ProductForm = ({ initialDraft: initialDraft, onSubmit }: Props) => 
         })
     }
 
+    const shouldShowUnitType = !['pill', 'capsule', 'injection'].includes(form)
+
     return (
-        <View style={{ gap: 16 }}>
-            <AppText variant='h2'>
-                Название
-            </AppText>
-            <AppInput
-                value={name}
-                onChangeText={setName}
-            />
-            <AppText variant='h2'>
-                Дозировка
-            </AppText>
-            <AppInput
-                value={dosage}
-                onChangeText={setDosage}
-            />
-            <AppText variant='h2'>
-                Количество
-            </AppText>
-            <AppInput
-                value={totalUnits}
-                onChangeText={setTotalUnits}
-                keyboardType="numeric"
-            />
-            <AppText variant='h2'>
-                Примечание
-            </AppText>
-            <AppInput
-                value={notes}
-                onChangeText={setNotes}
-                multiline
-            />
+        <ScrollView contentContainerStyle={{ gap: 24 }}>
+            <View>
 
-            <AppButton
-                title="Сохранить"
-                variant="primary"
-                onPress={handleSubmit}
-            />
-        </View>
+                <AppText variant='h3'>
+                    Название
+                </AppText>
+                <AppInput
+                    value={name}
+                    onChangeText={setName}
+                />
+
+                <AppText variant='h3'>
+                    Дозировка препарата
+                </AppText>
+                <AppText variant="caption">
+                    Количество активного вещества
+                </AppText>
+                <AppInput
+                    value={dosage}
+                    onChangeText={setDosage}
+                />
+
+
+                <AppText variant='h3'>
+                    Форма препарата
+                </AppText>
+                <AppText variant="caption">
+                    Физическая форма препарата
+                </AppText>
+                <FormSelector
+                    value={form}
+                    onChange={handleFormChange}
+                    openDropdown={(items, position) => openDropdown('form', items, position)}
+                    dropdownOpen={dropdownOpen && dropdownOwner === 'form'}
+                />
+
+
+                {shouldShowUnitType && (
+                    <>
+                        <AppText variant='h3'>
+                            Единица разового приёма
+                        </AppText>
+                        <AppText variant="caption">
+                            Единица измерения разового приёма: 2 капли, 1 таблетка, 5 мл...
+                        </AppText>
+                        <UnitTypeSelector
+                            form={form}
+                            value={unitType}
+                            onChange={setUnitType}
+                            openDropdown={(items, position) => openDropdown('unitType', items, position)}
+                            dropdownOpen={dropdownOpen && dropdownOwner === 'unitType'}
+                        />
+
+                    </>
+                )}
+                {isCountableUnit(unitType) && (
+                    <>
+                        <AppText variant='h3'>
+                            Количество в упаковке
+                        </AppText>
+                        <AppInput
+                            value={totalUnits}
+                            onChangeText={setTotalUnits}
+                            keyboardType="numeric"
+                        />
+                    </>
+                )}
+
+                <AppText variant='h3'>
+                    Примечание
+                </AppText>
+                <AppInput
+                    value={notes}
+                    onChangeText={setNotes}
+                    multiline
+                />
+
+                <AppButton
+                    title="Сохранить"
+                    variant="primary"
+                    onPress={handleSubmit}
+                    disabled={!isValid()}
+                />
+            </View>
+        </ScrollView>
     )
-
-
 }

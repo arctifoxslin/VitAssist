@@ -53,7 +53,12 @@ export const DateRangePicker = ({ startDate, endDate, onChange }: Props) => {
                     value={new Date(startDate)}
                     onChange={(_, date) => {
                         if (date) {
-                            onChange(date.getTime(), endDate)
+                            const newStart = date.getTime()
+                            const newEnd =
+                                endDate && endDate < newStart
+                                    ? undefined
+                                    : endDate
+                            onChange(newStart, newEnd)
                         }
                         closeStartPicker()
                     }}

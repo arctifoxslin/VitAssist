@@ -1,21 +1,19 @@
 import React, { useLayoutEffect } from "react";
 import { ScrollView } from "react-native";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store/store";
 import { ProductCard } from "../components/ProductCard";
 import { AddProductButton } from "../components/AddProductButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProductsNavigationStack } from "../ProductsNavigationStack";
 import { AppButton } from "../../../shared/ui/AppButton"
 import { useNavigation } from "@react-navigation/native";
+import { selectActiveProducts } from "../productsSelectors";
 
 type Navigation = NativeStackNavigationProp<ProductsNavigationStack, 'ProductsList'>
 
 export const ProductListScreen = () => {
     const navigation = useNavigation<Navigation>()
-    const products = useSelector((state: RootState) =>
-        state.products.list.filter(p => !p.archived)
-    )
+    const products = useSelector(selectActiveProducts)
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -35,7 +33,7 @@ export const ProductListScreen = () => {
                     <ProductCard
                         key={p.id}
                         product={p}
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate('AddProduct', { id: p.id })}
                     />
                 ))}
             </ScrollView>

@@ -7,7 +7,7 @@ import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { buildScheduleMatrix } from "../utils/buildScheduleMatrix";
-import { getIntakeStatusColor } from "../constants/statusColor";
+import { getIntakeStatus, INTAKE_STATUS } from "../../../shared/types/intakeStatus";
 import { calcScheduleProgress } from "../utils/calcScheduleProgress";
 
 type Props = {
@@ -49,7 +49,8 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
     }
 
     const renderStatusIcon = (status?: Intake["status"]) => {
-        if (!status) {
+        const info = getIntakeStatus(status)
+        if (!info) {
             return (
                 <View style={{
                     width: 14,
@@ -62,25 +63,17 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
             )
         }
 
-        const color = getIntakeStatusColor(status)
         return (
             <View style={{
                 width: 20,
                 height: 20,
                 borderRadius: 10,
-                backgroundColor: color,
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-                {status === "taken" && (
-                    <AppText style={{ color: "white", fontSize: 12 }}>✓</AppText>
-                )}
-                {status === "skipped" && (
-                    <AppText style={{ color: "white", fontSize: 12 }}>✕</AppText>
-                )}
-                {status === "delayed" && (
-                    <AppText style={{ color: "white", fontSize: 12 }}>•</AppText>
-                )}
+                <AppText style={{ color: info.color, fontSize: 12 }}>
+                    {info.icon}
+                </AppText>
             </View>
         )
     }
@@ -106,6 +99,37 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                 title={expanded ? "Свернуть" : "Показать таблицу"}
                 onPress={() => setExpanded(!expanded)}
             />
+            <View style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 16,
+                marginTop: 12,
+                flexWrap: "wrap",
+            }}>
+                {Object.entries(INTAKE_STATUS).map(([key, info]) => (
+                    <View
+                        key={key}
+                        style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                    >
+                        <View style={{
+                            width: 16,
+                            height: 16,
+                            borderRadius: 8,
+                            backgroundColor: info.color,
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
+                            <AppText style={{ color: "white", fontSize: 10 }}>
+                                {info.icon}
+                            </AppText>
+                        </View>
+
+                        <AppText variant="small" style={{ opacity: 0.8 }}>
+                            {info.text}
+                        </AppText>
+                    </View>
+                ))}
+            </View>
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}

@@ -1,9 +1,9 @@
-export type RepeatType = 'once' | 'daily' | 'every_x_days' |'weekly' | 'monthly'
+export type RepeatType = 'once' | 'daily' | 'every_x_days' | 'weekly' | 'monthly'
 
 export interface Schedule {
     id: string
     productId: string
-    dose: number
+    dosage: number
     times: string[]
     repeatType: RepeatType
     everyXDays?: number
@@ -17,7 +17,7 @@ export interface Schedule {
 
 export interface ScheduleDraft {
     productId: string
-    dose: number
+    dosage: number
     times: string[]
     repeatType: RepeatType
     everyXDays?: number

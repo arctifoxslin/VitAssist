@@ -3,7 +3,7 @@ import { Text, TextProps } from 'react-native';
 import { COLORS } from './theme/colors';
 import { TYPOGRAPHY } from './theme/typography';
 
-type Variant = 'h1' | 'h2' | 'h3' | 'title' | 'subtitle' | 'body' | 'small'
+type Variant = 'h1' | 'h2' | 'h3' | 'title' | 'subtitle' | 'body' | 'small' | 'caption'
 
 interface Props extends TextProps {
   variant?: Variant

@@ -1,5 +1,5 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { ScrollView } from "react-native";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
 import { addSchedule, updateSchedule, removeSchedule } from "../schedulesSlice";
@@ -10,6 +10,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
 import { RootState } from "../../../app/store/store";
 import { notificationService } from "../../notifications/NotificationService";
+import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
 
 type Props = NativeStackScreenProps<SchedulesNavigationStack, 'AddSchedule'>
 
@@ -24,7 +25,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
 
     const initialDraft: ScheduleDraft | undefined = existSchedule ? {
         productId: existSchedule.productId,
-        dose: existSchedule.dose,
+        dosage: existSchedule.dosage,
         times: existSchedule.times,
         repeatType: existSchedule.repeatType,
         everyXDays: existSchedule.everyXDays,
@@ -33,6 +34,23 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         startDate: existSchedule.startDate,
         endDate: existSchedule.endDate,
     } : undefined
+
+    const [dropdownVisible, setDropdownVisible] = useState(false)
+    const [dropdownItems, setDropdownItems] = useState<DropdownItem[]>([])
+    const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 })
+
+    const openDropdown = (
+        items: DropdownItem[],
+        position: { x: number, y: number }
+    ) => {
+        setDropdownItems(items)
+        setDropdownPosition(position)
+        setDropdownVisible(true)
+    }
+
+    const closeDropdown = () => {
+        setDropdownVisible(false)
+    }
 
     const handleSubmit = async (draft: ScheduleDraft) => {
         const schedule: Schedule = {
@@ -63,16 +81,29 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
     }
 
     return (
-        <View style={{ flex: 1 }}>
-            <ScheduleForm initialDraft={initialDraft} onSubmit={handleSubmit} />
-
-            {editId && (
-                <AppButton
-                    title="Удалить расписание"
-                    variant='primary'
-                    onPress={handleDelete}
+        <>
+            <ScrollView contentContainerStyle={{ padding: 32, gap: 24 }}>
+                <ScheduleForm
+                    initialDraft={initialDraft}
+                    onSubmit={handleSubmit}
+                    openDropdown={openDropdown}
+                    dropdownOpen={dropdownVisible}
                 />
-            )}
-        </View>
+                {editId && (
+                    <AppButton
+                        title="Удалить расписание"
+                        variant='primary'
+                        onPress={handleDelete}
+                    />
+                )}
+            </ScrollView>
+
+            <DropdownMenu
+                visible={dropdownVisible}
+                items={dropdownItems}
+                position={dropdownPosition}
+                onClose={closeDropdown}
+            />
+        </>
     )
 }

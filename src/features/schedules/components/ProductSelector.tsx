@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store/store";
+import { selectActiveProducts } from "../../products/productsSelectors";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { View } from "react-native";
 import { AnimatedMenuIcon } from "../../../shared/ui/AnimatedMenuIcon";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export const ProductSelector = ({ value, onChange, openDropdown, dropdownOpen }: Props) => {
-    const products = useSelector((state: RootState) => state.products.list)
+    const products = useSelector(selectActiveProducts)
     const buttonRef = useRef<View>(null)
     const selected = products.find(p => p.id === value)
 

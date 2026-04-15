@@ -10,7 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { formatTimeDiff } from "../utils/formatTimeDiff";
-import { getIntakeStatusColor } from "../constants/statusColor";
+import { getIntakeStatus } from "../../../shared/types/intakeStatus";
 
 type Navigation = NativeStackNavigationProp<IntakeNavigationStack>
 
@@ -61,14 +61,14 @@ export const TodayIntakeScreen = () => {
                     i.time === item.time &&
                     new Date(i.plannedFor).toDateString() === new Date(item.plannedFor).toDateString()
                 ))
+
+                const statusInfo = intake ? getIntakeStatus(intake.status) : null
                 return (
                     <AppCard key={`${item.scheduleId} - ${item.time}`} style={{ padding: 16 }}>
                         <View style={{
                             width: 6,
                             borderRadius: 3,
-                            backgroundColor: intake
-                                ? getIntakeStatusColor(intake.status)
-                                : "#DBDBDB"
+                            backgroundColor: statusInfo?.color ?? "#DBDBDB"
                         }} />
                         <View style={{ flex: 1 }}>
                             <AppText variant='h2'>
@@ -78,17 +78,13 @@ export const TodayIntakeScreen = () => {
                                 Время: {item.time}
                             </AppText>
 
-                            {intake ? (
+                            {statusInfo ? (
                                 <AppText style={{
                                     marginTop: 8,
-                                    color: getIntakeStatusColor(intake.status),
+                                    color: statusInfo.color,
                                     fontWeight: "600"
                                 }}>
-                                    Статус приёма: {
-                                        intake.status === "taken" ? "Принято"
-                                            : intake.status === "delayed" ? "Отложено"
-                                                : "Пропущено"
-                                    }
+                                    Статус приёма: {statusInfo.text}
                                 </AppText>
                             ) : (
                                 <AppButton

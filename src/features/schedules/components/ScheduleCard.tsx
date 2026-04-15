@@ -2,8 +2,7 @@ import React from "react";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { Schedule } from "../../../shared/types/Schedule";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store/store";
-import { Product } from "../../../shared/types/Product";
+import { selectActiveProducts } from "../../products/productsSelectors";
 import { AppText } from "../../../shared/ui/AppText";
 import { View, Pressable } from "react-native";
 
@@ -13,16 +12,15 @@ interface Props {
 }
 
 export const ScheduleCard = ({ schedule, onPress }: Props) => {
-    const product = useSelector((state: RootState) => {
-        state.products.list.find(p => p.id === schedule.productId)
-    }) as Product | undefined
+    const products = useSelector(selectActiveProducts)
+    const selected = products.find(p => p.id === schedule.productId)
 
     return (
         <Pressable onPress={onPress}>
             <AppCard style={{ marginBottom: 12, gap: 12 }}>
                 <View>
                     <AppText variant="title">
-                        {product?.name ?? 'Неизвестный препарат'}
+                        {selected?.name ?? 'Неизвестный препарат'}
                     </AppText>
                     <AppText variant="subtitle" color="#666">
                         {schedule.times.join(', ')}

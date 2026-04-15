@@ -11,6 +11,7 @@ import uuid from "react-native-uuid";
 import { IntakeStatus } from "../../../shared/types/Intake";
 import { updateProduct } from "../../products/productsSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { isCountableUnit } from "../../../shared/types/countableUnits";
 
 type Props = NativeStackScreenProps<IntakeNavigationStack, "IntakeScreen">
 
@@ -62,7 +63,9 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
         if (status === "taken") {
             dispatch(updateProduct({
                 ...product,
-                remainingUnits: product.remainingUnits - schedule.dose,
+                remainingUnits: isCountableUnit(product.unitType)
+                    ? (product.remainingUnits ?? 0) - schedule.dosage
+                    : product.remainingUnits
             }))
         }
 

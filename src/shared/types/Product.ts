@@ -1,13 +1,13 @@
-export type FormUnitTypes = 'pill' | 'capsule' | 'liquid' | 'injection' | 'other'
+import { FormUnitType, UnitType } from "./units";
 
 export interface Product {
     id: string
     name: string
     dosage: string
-    form: FormUnitTypes
+    form: FormUnitType
     totalUnits?: number
-    remainingUnits: number
-    unitType?: FormUnitTypes
+    remainingUnits?: number
+    unitType: UnitType
     color?: string
     icon?: string
     notes?: string
@@ -17,10 +17,10 @@ export interface Product {
 }
 
 export interface ProductDraft {
-    name:string
+    name: string
     dosage: string
-    form: FormUnitTypes
+    form: FormUnitType
     totalUnits: number
-    unitType: FormUnitTypes
+    unitType: UnitType
     notes?: string
 }

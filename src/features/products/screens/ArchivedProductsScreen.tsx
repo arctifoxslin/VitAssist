@@ -3,15 +3,13 @@ import { View, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
-import { RootState } from "../../../app/store/store";
 import { unarchiveProduct } from "../productsSlice";
+import { selectArchivedProducts } from "../productsSelectors";
 
 export const ArchivedProductsScreen = () => {
     const dispatch = useDispatch()
 
-    const archivedProducts = useSelector((state: RootState) =>
-        state.products.list.filter(p => p.archived)
-    )
+    const archivedProducts = useSelector(selectArchivedProducts)
     const handleUnarchive = (id: string) => {
         dispatch(unarchiveProduct(id))
     }

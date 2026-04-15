@@ -3,6 +3,8 @@ import { AppText } from "../../../shared/ui/AppText";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { View, Pressable } from "react-native";
 import { Product } from "../../../shared/types/Product";
+import { UNIT_TYPE_LABELS } from "../../../shared/types/units";
+import { isCountableUnit } from "../../../shared/types/countableUnits";
 
 interface Props {
     product: Product
@@ -10,6 +12,7 @@ interface Props {
 }
 
 export const ProductCard = ({ product, onPress }: Props) => {
+    const unitTypeLabel = UNIT_TYPE_LABELS[product.unitType]
     return (
         <Pressable onPress={onPress}>
             <AppCard style={{ marginBottom: 12, gap: 12 }}>
@@ -22,9 +25,9 @@ export const ProductCard = ({ product, onPress }: Props) => {
                     </AppText>
                 </View>
                 <View>
-                    {product.remainingUnits !== undefined && (
+                    {isCountableUnit(product.unitType) && (
                         <AppText>
-                            Осталось: {product.remainingUnits} {product.unitType}
+                            {`Осталось: ${product.remainingUnits} (${unitTypeLabel})`}
                         </AppText>
                     )}
                 </View>
