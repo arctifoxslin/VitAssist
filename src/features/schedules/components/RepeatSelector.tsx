@@ -1,6 +1,6 @@
 import React from "react";
 import { AppRadioGroup } from "../../../shared/ui/AppRadioGroup";
-import { RepeatType } from "../../../shared/types/Schedule";
+import { RepeatType, REPEAT_TYPE, REPEAT_TYPE_LABELS } from "../../../shared/types/repeatRype";
 
 interface Props {
     value: RepeatType
@@ -8,17 +8,15 @@ interface Props {
 }
 
 export const RepeatSelector = ({ value, onChange }: Props) => {
+    const options = (Object.keys(REPEAT_TYPE) as RepeatType[]).map(key => ({
+        label: REPEAT_TYPE_LABELS[key],
+        value: REPEAT_TYPE[key],
+    }))
     return (
         <AppRadioGroup
             value={value}
-            onChange={(value) => onChange(value as RepeatType)}
-            options={[
-                { label: "Один раз", value: "once" },
-                { label: "Каждый день", value: "daily" },
-                { label: "Через N дней", value: "every_x_days" },
-                { label: "По дням недели", value: "weekly" },
-                { label: "Раз в месяц", value: "monthly" },
-            ]}
+            onChange={(val) => onChange(val as RepeatType)}
+            options={options}
         />
     )
 }

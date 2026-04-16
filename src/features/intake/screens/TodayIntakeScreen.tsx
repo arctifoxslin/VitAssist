@@ -9,8 +9,8 @@ import { getTodayIntake } from "../utils/getTodayIntake";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
-import { formatTimeDiff } from "../utils/formatTimeDiff";
 import { getIntakeStatus } from "../../../shared/types/intakeStatus";
+import { selectActiveProducts } from "../../products/productsSelectors";
 
 type Navigation = NativeStackNavigationProp<IntakeNavigationStack>
 
@@ -19,9 +19,7 @@ export const TodayIntakeScreen = () => {
     const schedules = useSelector((state: RootState) =>
         state.schedules.list
     )
-    const products = useSelector((state: RootState) =>
-        state.products.list
-    )
+    const products = useSelector(selectActiveProducts)
     const intakes = useSelector((state: RootState) =>
         state.intake.list
     )
@@ -30,30 +28,13 @@ export const TodayIntakeScreen = () => {
         (a, b) => a.plannedFor - b.plannedFor || a.productId.localeCompare(b.productId)
     )
 
-    const nextIntake = items.find(i => i.plannedFor > Date.now())
-    const nextIntakeProduct = nextIntake
-        ? products.find(p => p.id === nextIntake.productId)
-        : null
     return (
         <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-            <AppText variant='h3'>
-                Сегодня
-            </AppText>
-
-            {nextIntake && (
-                <AppCard style={{ padding: 16, backgroundColor: "#eef6ff" }}>
-                    <AppText variant='h2'>
-                        Следующий приём
-                    </AppText>
-                    <AppText variant='body' style={{ fontWeight: "600" }}>
-                        {nextIntakeProduct?.name ?? "Неизвестный препарат"}
-                    </AppText>
-                    <AppText style={{ opacity: 0.7 }}>
-                        {formatTimeDiff(nextIntake.plannedFor)}
-                    </AppText>
-                </AppCard>
+            {items.length === 0 && (
+                <AppText variant="title" style={{ textAlign: "center" }}>
+                    На сегодня приёмов не запланированно
+                </AppText>
             )}
-
             {items.map(item => {
                 const product = products.find(p => p.id === item.productId)
                 const intake = intakes.find(i => (

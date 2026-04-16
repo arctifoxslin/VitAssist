@@ -51,8 +51,10 @@ export const ProductForm = ({
         if (!name.trim()) return false
         if (!dosage.trim()) return false
 
-        const units = Number(totalUnits)
-        if (!units || units <= 0) return false
+        if (isCountableUnit(unitType)) {
+            const units = Number(totalUnits)
+            if (!units || units <= 0) return false
+        }
 
         return true
     }
@@ -73,7 +75,7 @@ export const ProductForm = ({
         })
     }
 
-    const shouldShowUnitType = !['pill', 'capsule', 'injection'].includes(form)
+    const shouldShowUnitType = !['pill', 'capsule', 'injection', 'spray'].includes(form)
 
     return (
         <ScrollView contentContainerStyle={{ gap: 24 }}>

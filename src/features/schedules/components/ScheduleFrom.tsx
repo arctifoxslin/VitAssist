@@ -3,7 +3,8 @@ import { View, ScrollView } from "react-native";
 import { AppInput } from "../../../shared/ui/AppInput";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
-import { ScheduleDraft, RepeatType } from "../../../shared/types/Schedule";
+import { ScheduleDraft } from "../../../shared/types/Schedule";
+import { RepeatType, REPEAT_TYPE } from "../../../shared/types/repeatRype";
 import { ProductSelector } from "./ProductSelector";
 import { TimePickerList } from "./TimePickerList";
 import { RepeatSelector } from "./RepeatSelector";
@@ -25,7 +26,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
     const [productId, setProductId] = useState<string | null>(null)
     const [dosage, setDosage] = useState("1")
     const [times, setTimes] = useState<string[]>([])
-    const [repeatType, setRepeatType] = useState<RepeatType>('daily')
+    const [repeatType, setRepeatType] = useState<RepeatType>(REPEAT_TYPE.daily)
 
     const [everyXDays, setEveryxDays] = useState<string>('2')
     const [daysOfWeek, setDaysOfWeek] = useState<number[]>([])
@@ -59,15 +60,15 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             return false
         }
 
-        if (repeatType === 'every_x_days' && (!everyXDays || Number(everyXDays) < 1)) {
+        if (repeatType === REPEAT_TYPE.everyXDays && (!everyXDays || Number(everyXDays) < 1)) {
             return false
         }
 
-        if (repeatType === 'weekly' && daysOfWeek.length === 0) {
+        if (repeatType === REPEAT_TYPE.weekly && daysOfWeek.length === 0) {
             return false
         }
 
-        if (repeatType === 'monthly' && (
+        if (repeatType === REPEAT_TYPE.monthly && (
             !dayOfMonth
             || Number(dayOfMonth) < 1
             || Number(dayOfMonth) > 31
@@ -88,13 +89,13 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             dosage: Number(dosage),
             times,
             repeatType,
-            everyXDays: repeatType === 'every_x_days'
+            everyXDays: repeatType === REPEAT_TYPE.everyXDays
                 ? Number(everyXDays)
                 : undefined,
-            daysOfWeek: repeatType === 'weekly'
+            daysOfWeek: repeatType === REPEAT_TYPE.weekly
                 ? daysOfWeek
                 : undefined,
-            dayOfMonth: repeatType === 'monthly'
+            dayOfMonth: repeatType === REPEAT_TYPE.monthly
                 ? Number(dayOfMonth)
                 : undefined,
             startDate,
@@ -134,7 +135,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             </View>
 
             {/*Conditional on Repeat Type*/}
-            {repeatType === 'every_x_days' && (
+            {repeatType === REPEAT_TYPE.everyXDays && (
                 <AppInput
                     label="Каждые N дней"
                     value={everyXDays}
@@ -143,7 +144,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                 />
             )}
 
-            {repeatType === 'weekly' && (
+            {repeatType === REPEAT_TYPE.weekly && (
                 <View>
                     <AppText variant='h2'>
                         Дни недели
@@ -152,7 +153,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                 </View>
             )}
 
-            {repeatType === 'monthly' && (
+            {repeatType === REPEAT_TYPE.monthly && (
                 <AppInput
                     label="День месяца"
                     value={dayOfMonth}

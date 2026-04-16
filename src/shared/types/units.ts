@@ -4,18 +4,14 @@ export const FORM_LABELS = {
     liquid: "Жидкость",
     injection: "Инъекция",
     spray: "Спрей",
-    drops: "Капли",
-    gel: "Гель / мазь",
-    powder: "Порошок",
-    sachet: "Пакетик",
     other: "Другое",
 } as const
 export type FormUnitType = keyof typeof FORM_LABELS
 
 export const UNIT_TYPE_LABELS = {
-    pill: "таблетка",
-    capsule: "капсула",
-    injection: "инъекция",
+    pill: "шт",
+    capsule: "шт",
+    injection: "шт",
     ml: "мл",
     drops: "капли",
     spray: "пшик",
@@ -30,9 +26,5 @@ export const UNIT_TYPES_BY_FORM: Record<FormUnitType, UnitType[]> = {
     injection: ["injection"],
     liquid: ["ml", "drops"],
     spray: ["spray"],
-    drops: ["drops"],
-    gel: ["grams"],
-    powder: ["grams"],
-    sachet: ["sachet"],
     other: ["pill", "capsule", "ml", "drops", "spray", "grams", "sachet"],
 }

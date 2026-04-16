@@ -3,7 +3,7 @@ import { AppText } from "../../../shared/ui/AppText";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { View, Pressable } from "react-native";
 import { Product } from "../../../shared/types/Product";
-import { UNIT_TYPE_LABELS } from "../../../shared/types/units";
+import { FORM_LABELS, UNIT_TYPE_LABELS } from "../../../shared/types/units";
 import { isCountableUnit } from "../../../shared/types/countableUnits";
 
 interface Props {
@@ -13,6 +13,7 @@ interface Props {
 
 export const ProductCard = ({ product, onPress }: Props) => {
     const unitTypeLabel = UNIT_TYPE_LABELS[product.unitType]
+    const formTypeLabel = FORM_LABELS[product.form]
     return (
         <Pressable onPress={onPress}>
             <AppCard style={{ marginBottom: 12, gap: 12 }}>
@@ -21,7 +22,10 @@ export const ProductCard = ({ product, onPress }: Props) => {
                         {product.name}
                     </AppText>
                     <AppText variant="subtitle" color="#666">
-                        {product.dosage}
+                        Активного вещества: {product.dosage}
+                    </AppText>
+                    <AppText variant="subtitle" color="#666">
+                        Форма препарата: {formTypeLabel}
                     </AppText>
                 </View>
                 <View>

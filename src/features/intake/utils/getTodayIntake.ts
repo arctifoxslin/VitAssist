@@ -1,5 +1,4 @@
-import { Schedule } from "../../shared/types/Schedule";
-
+import { Schedule } from "../../../shared/types/Schedule"
 export interface TodayIntake {
     scheduleId: string
     productId: string
@@ -7,7 +6,7 @@ export interface TodayIntake {
     plannedFor: number
 }
 
-export function getTodayIntake(schedules: Schedule[]): TodayIntake[]{
+export function getTodayIntake(schedules: Schedule[]): TodayIntake[] {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 

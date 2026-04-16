@@ -1,5 +1,4 @@
-export type RepeatType = 'once' | 'daily' | 'every_x_days' | 'weekly' | 'monthly'
-
+import { RepeatType } from "./repeatRype"
 export interface Schedule {
     id: string
     productId: string
