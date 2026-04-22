@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { View, ScrollView } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
@@ -8,6 +8,7 @@ import { RootState } from "../../../app/store/store";
 import { getYearsFromSchedule } from "../utils/getYearsFromSchedule";
 import { getMonthsFromSchecule } from "../utils/getMonthsFromSchedule";
 import { ScheduleCard } from "../components/ScheduleCard";
+import { intakeService } from "../../../shared/intake/IntakeService";
 
 export const HistoryScreen = () => {
     const schedules = useSelector((state: RootState) =>
@@ -16,8 +17,23 @@ export const HistoryScreen = () => {
     const products = useSelector((state: RootState) =>
         state.products.list
     )
-    const intakes = useSelector((state: RootState) =>
-        state.intake.list
+
+    const [historyMap, setHistoryMap] = useState<Record<string, any[]>>({})
+
+    useEffect(
+        useCallback(() => {
+            const load = async () => {
+                const map: Record<string, any[]> = {}
+
+                for (const s of schedules) {
+                    const list = await intakeService.getHistory(s.id)
+                    map[s.id] = list
+                }
+                setHistoryMap(map)
+            }
+            load()
+
+        }, [])
     )
 
     // Screen filters
@@ -108,12 +124,11 @@ export const HistoryScreen = () => {
                     const end = s.endDate ? new Date(s.endDate) : start
 
                     return (
-                        start.getFullYear() === selectedYear &&
-                        start.getMonth() === month
-                    ) || (
-                            end.getFullYear() === selectedYear &&
-                            end.getMonth() === month
-                        )
+                        (start.getFullYear() === selectedYear &&
+                            start.getMonth() === month) ||
+                        (end.getFullYear() === selectedYear &&
+                            end.getMonth() === month)
+                    )
                 })
 
                 const monthLabel = new Date(selectedYear, month).toLocaleDateString(
@@ -129,12 +144,10 @@ export const HistoryScreen = () => {
 
                         {monthSchedules.map(s => {
                             const product = products.find(p => p.id === s.productId)
-                            const scheduleIntakes = intakes.filter(i => i.scheduleId === s.id)
-
+                            const scheduleIntakes = historyMap[s.id] ?? []
                             if (!product) {
                                 return null
                             }
-
                             return (
                                 <ScheduleCard
                                     key={s.id}

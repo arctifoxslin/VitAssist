@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
@@ -16,6 +16,15 @@ export const ScheduleListScreen = () => {
         (state: RootState) => state.schedules.list
     )
 
+    /*Global tik*/
+    const [now, setNow] = useState(Date.now())
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setNow(Date.now())
+        }, 60_000)
+        return () => clearInterval(interval)
+    }, [])
+
     return (
         <View style={{ flex: 1 }}>
             <FlatList
@@ -25,6 +34,7 @@ export const ScheduleListScreen = () => {
                 renderItem={({ item }) => (
                     <ScheduleCard
                         schedule={item}
+                        now={now}
                         onPress={() => navigation.navigate('AddSchedule', { id: item.id })}
                     />
                 )}

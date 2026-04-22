@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Switch } from "react-native";
 import { AppInput } from "../../../shared/ui/AppInput";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
@@ -11,6 +11,7 @@ import { RepeatSelector } from "./RepeatSelector";
 import { WeeklySelector } from "./WeeklySelector";
 import { DateRangePicker } from "./DateRangePicker";
 import { DropdownItem } from "../../../shared/ui/DropdownMenu";
+import { RepeatReminderSelector } from "./RepeatReminderSelector";
 
 interface Props {
     initialDraft?: ScheduleDraft
@@ -35,6 +36,10 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
     const [startDate, setStartDate] = useState(Date.now())
     const [endDate, setEndDate] = useState<number | undefined>(undefined)
 
+    const [repeatReminderEnabled, setRepeatReminderEnabled] = useState(false)
+    const [repeatReminderIntervalMinutes, setRepeatReminderIntervalMinutes] = useState<number | null>(null)
+    const [repeatReminderMaxCount, setRepeatReminderMaxCount] = useState<number | null>(null)
+
     useEffect(() => {
         if (initialDraft) {
             setProductId(initialDraft.productId)
@@ -46,6 +51,9 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             setDayOfMonth(initialDraft.dayOfMonth?.toString() ?? "1")
             setStartDate(initialDraft.startDate)
             setEndDate(initialDraft.endDate)
+            setRepeatReminderEnabled(initialDraft.repeatReminderEnabled)
+            setRepeatReminderIntervalMinutes(initialDraft.repeatReminderIntervalMinutes)
+            setRepeatReminderMaxCount(initialDraft.repeatReminderMaxCount)
         }
     }, [initialDraft])
 
@@ -100,6 +108,9 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                 : undefined,
             startDate,
             endDate,
+            repeatReminderEnabled,
+            repeatReminderIntervalMinutes,
+            repeatReminderMaxCount,
         })
     }
 
@@ -162,6 +173,7 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                 />
             )}
 
+
             {/*Date Range*/}
             <View>
                 <AppText variant='h2'>
@@ -176,6 +188,16 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                     }}
                 />
             </View>
+
+            {/*Repeat Reminders*/}
+            <RepeatReminderSelector
+                enable={repeatReminderEnabled}
+                onEnableChange={setRepeatReminderEnabled}
+                interval={repeatReminderIntervalMinutes}
+                onIntervalChange={setRepeatReminderIntervalMinutes}
+                maxCount={repeatReminderMaxCount}
+                onMaxCountChange={setRepeatReminderMaxCount}
+            />
 
             {/*Set Dose*/}
             <View>

@@ -12,6 +12,9 @@ export interface Schedule {
     endDate?: number
     createdAt: number
     updatedAt: number
+    repeatReminderEnabled: boolean
+    repeatReminderIntervalMinutes: number | null
+    repeatReminderMaxCount: number | null
 }
 
 export interface ScheduleDraft {
@@ -24,4 +27,7 @@ export interface ScheduleDraft {
     dayOfMonth?: number
     startDate: number
     endDate?: number
+    repeatReminderEnabled: boolean
+    repeatReminderIntervalMinutes: number | null
+    repeatReminderMaxCount: number | null
 }

@@ -1,5 +1,6 @@
 export type IntakeNavigationStack = {
-    IntakeScreen: {scheduleId: string, time: string}
+    IntakeScreen: { scheduleId: string, plannedTime: number }
     TodayIntakeScreen: undefined
     HistoryScreen: undefined
+    MissedIntakesScreen: { scheduleId: string }
 }

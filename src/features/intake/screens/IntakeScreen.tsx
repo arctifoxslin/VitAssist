@@ -3,21 +3,17 @@ import { View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { AppCard } from "../../../shared/ui/AppCard";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
-import { addIntake } from "../intakeSlice";
-import uuid from "react-native-uuid";
-import { IntakeStatus } from "../../../shared/types/Intake";
-import { updateProduct } from "../../products/productsSlice";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { isCountableUnit } from "../../../shared/types/countableUnits";
+import { intakeService } from "../../../shared/intake/IntakeService";
+import { notificationService } from "../../../shared/notifications/NotificationService";
 
 type Props = NativeStackScreenProps<IntakeNavigationStack, "IntakeScreen">
 
 export const IntakeScreen = ({ navigation, route }: Props) => {
-    const dispatch = useDispatch()
-    const { scheduleId, time } = route.params
+    const { scheduleId, plannedTime } = route.params
 
     const schedule = useSelector((state: RootState) =>
         state.schedules.list.find(s => s.id === scheduleId)
@@ -36,8 +32,8 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
             </View>
         )
     }
-
-    const plannedFor = (() => {
+    //timestamp for planned intake
+    /*const plannedFor = (() => {
         const [hh, mm] = time.split(":").map(Number)
         const date = new Date()
         date.setHours(hh)
@@ -46,29 +42,20 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
 
         return date.getTime()
 
-    })()
+    })()*/
 
-    const handleStatus = (status: IntakeStatus) => {
-        const intake = {
-            id: uuid.v4().toString(),
-            scheduleId,
-            productId: product.id,
-            time,
-            plannedFor,
-            createdAt: Date.now(),
-            status,
-        }
-        dispatch(addIntake(intake))
+    const handleTaken = async () => {
+        await intakeService.markTaken(schedule, plannedTime)
+        navigation.goBack()
+    }
 
-        if (status === "taken") {
-            dispatch(updateProduct({
-                ...product,
-                remainingUnits: isCountableUnit(product.unitType)
-                    ? (product.remainingUnits ?? 0) - schedule.dosage
-                    : product.remainingUnits
-            }))
-        }
+    const handleSkipped = async () => {
+        await intakeService.markSkipped(schedule, plannedTime, 'user_skipped')
+        navigation.goBack()
+    }
 
+    const handleDelayed = async () => {
+        await notificationService.ScheduleSnoozed(schedule, plannedTime)
         navigation.goBack()
     }
 
@@ -82,24 +69,24 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
                     Дозировка: {product.dosage} {product.unitType}
                 </AppText>
                 <AppText variant='body' style={{ opacity: 0.7 }}>
-                    Время приёма: {time}
+                    Время приёма: {plannedTime}
                 </AppText>
             </AppCard>
 
             <AppButton
                 title="Принято"
                 variant="secondary"
-                onPress={() => handleStatus("taken")}
+                onPress={handleTaken}
             />
             <AppButton
                 title="Пропущено"
                 variant="primary"
-                onPress={() => handleStatus("skipped")}
+                onPress={handleSkipped}
             />
             <AppButton
                 title="Отложено"
                 variant="secondary"
-                onPress={() => handleStatus("delayed")}
+                onPress={handleDelayed}
             />
         </View>
     )

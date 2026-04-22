@@ -1,7 +1,15 @@
 import React from "react";
 import Feather from "react-native-vector-icons/Feather";
 
-export type IconName = "plus" | "user" | "menu" | "settings" | "x" | "arrow-down-right"
+export type IconName =
+    | "plus"
+    | "user"
+    | "menu"
+    | "settings"
+    | "x"
+    | "chevron-up"
+    | "chevron-down"
+    | "chevron-left"
 
 interface Props {
     name: IconName

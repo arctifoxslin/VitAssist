@@ -1,19 +1,16 @@
-import { Schedule } from "../../../shared/types/Schedule";
-import { REPEAT_TYPE } from "../../../shared/types/repeatRype";
+import { Schedule } from "../types/Schedule";
+import { REPEAT_TYPE } from "../types/repeatRype";
 
-export function getNextIntake(schedule: Schedule): number | null {
-    const now = Date.now()
-
+function generatePlannedIntakes(schedule: Schedule): number[] {
     const scheduleStart = new Date(schedule.startDate)
     const scheduleEnd = schedule.endDate
         ? new Date(schedule.endDate)
-        : null
+        : new Date(scheduleStart.getTime() + 365 * (1000 * 60 * 60 * 24))
 
-    const intakePeriod = scheduleEnd
-        ? Math.ceil((scheduleEnd.getTime() - scheduleStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
-        : 365 /*end date undefined - let limit 1 year*/
+    const intakePeriod =
+        Math.ceil((scheduleEnd.getTime() - scheduleStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
 
-    const futureIntakes: number[] = []
+    const result: number[] = []
 
     for (let i = 0; i < intakePeriod; i++) {
         const day = new Date(scheduleStart)
@@ -40,14 +37,25 @@ export function getNextIntake(schedule: Schedule): number | null {
             plannedDate.setHours(hh)
             plannedDate.setMinutes(mm)
             plannedDate.setSeconds(0)
+            plannedDate.setMilliseconds(0)
 
-            const nextIntakeTime = plannedDate.getTime()
-            if (nextIntakeTime > now) {
-                futureIntakes.push(nextIntakeTime)
-            }
+            result.push(plannedDate.getTime())
         }
     }
+    return result
+}
 
-    futureIntakes.sort((a, b) => a - b)
-    return futureIntakes[0] ?? null
+export function getNextIntake(schedule: Schedule) {
+    const now = Date.now()
+    return generatePlannedIntakes(schedule).filter(t => t > now)[0] ?? null
+}
+
+export function getPastIntakes(schedule: Schedule) {
+    const now = Date.now()
+    return generatePlannedIntakes(schedule).filter(t => t < now)
+}
+
+export function getNextIntakeTimeAfter(schedule: Schedule, fromTime: number | null) {
+    if (!fromTime) return null
+    return generatePlannedIntakes(schedule).find(t => t > fromTime) ?? null
 }

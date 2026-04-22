@@ -7,17 +7,18 @@ import { AppText } from "../../../shared/ui/AppText";
 import { View, Pressable } from "react-native";
 import { UNIT_TYPE_LABELS } from "../../../shared/types/units";
 import { formatTimeDiff } from "../../intake/utils/formatTimeDiff";
-import { getNextIntake } from "../utils/getNextIntake";
+import { getNextIntake } from "../../../shared/utils/generatePlannedIntakes";
 
 interface Props {
     schedule: Schedule
     onPress?: () => void
+    now?: number
 }
 
-export const ScheduleCard = ({ schedule, onPress }: Props) => {
+export const ScheduleCard = ({ schedule, now, onPress }: Props) => {
     const products = useSelector(selectActiveProducts)
     const selected = products.find(p => p.id === schedule.productId)
-    const nextIntake = getNextIntake(schedule)
+    const nextIntakeTs = getNextIntake(schedule)
 
     return (
         <Pressable onPress={onPress}>
@@ -34,10 +35,10 @@ export const ScheduleCard = ({ schedule, onPress }: Props) => {
                     </AppText>
 
                 </View>
-                {nextIntake && (
+                {nextIntakeTs && (
                     <View>
                         <AppText variant="subtitle">
-                            Следующий приём: {formatTimeDiff(nextIntake)}
+                            Следующий приём: {formatTimeDiff(nextIntakeTs, now)}
                         </AppText>
                     </View>
                 )}

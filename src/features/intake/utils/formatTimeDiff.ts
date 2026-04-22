@@ -1,6 +1,5 @@
-export function formatTimeDiff(target: number): string {
-    const now = Date.now()
-    const diff = target - now
+export function formatTimeDiff(targetTs: number, now: number = Date.now()): string {
+    const diff = targetTs - now
     if (diff <= 0) {
         return "сейчас"
     }

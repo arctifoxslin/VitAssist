@@ -9,6 +9,11 @@ import { AppCard } from "../../../shared/ui/AppCard";
 import { buildScheduleMatrix } from "../utils/buildScheduleMatrix";
 import { getIntakeStatus, INTAKE_STATUS } from "../../../shared/types/intakeStatus";
 import { calcScheduleProgress } from "../utils/calcScheduleProgress";
+import { useNavigation } from "@react-navigation/native";
+import { IntakeNavigationStack } from "../IntakeNavigationStack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+type Navigation = NativeStackNavigationProp<IntakeNavigationStack, "HistoryScreen">
 
 type Props = {
     schedule: Schedule
@@ -17,8 +22,10 @@ type Props = {
 }
 
 export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
+    const navigation = useNavigation<Navigation>()
     const [expanded, setExpanded] = useState(false)
     const [showDetails, setShowDetails] = useState(false)
+    const hasMissed = intakes.some(i => i.status === "skipped")
     const progress = calcScheduleProgress(intakes)
 
     const matrix = buildScheduleMatrix(schedule, intakes)
@@ -94,11 +101,12 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                 Курс: {formatDateRange()}
             </AppText>
 
-            {/*Schedule Table*/}
+            {/*TABLE TOGGLE*/}
             <AppButton
                 title={expanded ? "Свернуть" : "Показать таблицу"}
                 onPress={() => setExpanded(!expanded)}
             />
+            {/*TABLE LEGEND*/}
             <View style={{
                 flexDirection: "row",
                 alignItems: "center",
@@ -130,84 +138,97 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                     </View>
                 ))}
             </View>
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingVertical: 8 }}
-            >
-                <View style={{ flexDirection: 'row' }}>
-                    {/*ROWS --- Time Title*/}
-                    <View style={{
-                        marginRight: 8,
-                        borderRightWidth: 1,
-                        borderColor: "#e0e0e0",
-                        paddingRight: 8,
-                    }}>
-                        <View style={{ height: 36 }} />
-                        {matrix.times.map(time => (
-                            <View key={time} style={{
-                                height: 40,
-                                justifyContent: 'center',
-                            }}>
-                                <AppText variant='small' style={{ opacity: 0.7 }}>
-                                    {time}
-                                </AppText>
-                            </View>
-                        ))}
-                    </View>
-
-                    {/*MATRIX COLUMNS*/}
-                    {matrix.days.map((day, index) => {
-                        const dayKey = day.toDateString()
-                        const isEven = index % 2 === 0
-                        return (
-
-                            <View key={dayKey} style={{
-                                marginRight: 6,
-                                backgroundColor: isEven ? "#fafafa" : "#fff",
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                shadowColor: "#000",
-                                shadowOpacity: 0.05,
-                                shadowRadius: 3,
-                                elevation: 1,
-                            }}>
-                                {/*COLUMNS - Day titles*/}
-                                <View style={{
-                                    height: 36,
+            {/*MATRIX*/}
+            {expanded && (
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingVertical: 8 }}
+                >
+                    <View style={{ flexDirection: 'row' }}>
+                        {/*TIME COLUMN*/}
+                        <View style={{
+                            marginRight: 8,
+                            borderRightWidth: 1,
+                            borderColor: "#e0e0e0",
+                            paddingRight: 8,
+                        }}>
+                            <View style={{ height: 36 }} />
+                            {matrix.times.map(time => (
+                                <View key={time} style={{
+                                    height: 40,
                                     justifyContent: 'center',
-                                    alignItems: 'center',
-                                    backgroundColor: "#f3f3f3",
-                                    borderBottomWidth: 1,
-                                    borderColor: '#e0e0e0',
                                 }}>
-                                    <AppText variant='small'>
-                                        {formatDay(day)}
+                                    <AppText variant='small' style={{ opacity: 0.7 }}>
+                                        {time}
                                     </AppText>
                                 </View>
+                            ))}
+                        </View>
 
-                                {/*CELLS - Times*/}
-                                {matrix.times.map(time => {
-                                    const cell = getCell(day, time)
+                        {/*DAY COLUMNS*/}
+                        {matrix.days.map((day, index) => {
+                            const dayKey = day.toDateString()
+                            const isEven = index % 2 === 0
+                            return (
 
-                                    return (
-                                        <View key={time} style={{
-                                            height: 40,
-                                            width: 40,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            borderBottomWidth: 1,
-                                            borderColor: "#eaeaea",
-                                        }}>
-                                            {renderStatusIcon(cell?.status)}
-                                        </View>
-                                    )
-                                })}
-                            </View>
-                        )
+                                <View key={dayKey} style={{
+                                    marginRight: 6,
+                                    backgroundColor: isEven ? "#fafafa" : "#fff",
+                                    borderRadius: 8,
+                                    overflow: "hidden",
+                                    shadowColor: "#000",
+                                    shadowOpacity: 0.05,
+                                    shadowRadius: 3,
+                                    elevation: 1,
+                                }}>
+                                    {/*DAY HEADERS*/}
+                                    <View style={{
+                                        height: 36,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        backgroundColor: "#f3f3f3",
+                                        borderBottomWidth: 1,
+                                        borderColor: '#e0e0e0',
+                                    }}>
+                                        <AppText variant='small'>
+                                            {formatDay(day)}
+                                        </AppText>
+                                    </View>
+
+                                    {/*CELLS*/}
+                                    {matrix.times.map(time => {
+                                        const cell = getCell(day, time)
+
+                                        return (
+                                            <View key={time} style={{
+                                                height: 40,
+                                                width: 40,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                borderBottomWidth: 1,
+                                                borderColor: "#eaeaea",
+                                            }}>
+                                                {renderStatusIcon(cell?.status)}
+                                            </View>
+                                        )
+                                    })}
+                                </View>
+                            )
+                        })}
+                    </View>
+                </ScrollView>
+            )}
+            {/*EDIT INTAKES*/}
+            {hasMissed && (
+                <AppButton
+                    title="Редактировать"
+                    onPress={() => navigation.navigate("MissedIntakesScreen", {
+                        scheduleId: schedule.id,
                     })}
-                </View>
-            </ScrollView>
+                />
+            )}
+            {/*DETAILS*/}
             <AppButton
                 title={showDetails ? "Скрыть детали" : "Подробнее"}
                 onPress={() => setShowDetails(!showDetails)}

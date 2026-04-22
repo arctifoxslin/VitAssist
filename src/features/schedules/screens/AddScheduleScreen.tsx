@@ -2,21 +2,20 @@ import React, { useState } from "react";
 import { ScrollView } from "react-native";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
-import { addSchedule, updateSchedule, removeSchedule } from "../schedulesSlice";
+import { updateScheduleThunk, createScheduleThunk, removeScheduleThunk } from "../schedulesSlice";
 import { Schedule, ScheduleDraft } from "../../../shared/types/Schedule";
 import uuid from "react-native-uuid";
 import { ScheduleForm } from "../components/ScheduleFrom";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
-import { RootState } from "../../../app/store/store";
-import { notificationService } from "../../notifications/NotificationService";
+import { AppDispatch, RootState } from "../../../app/store/store";
 import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
 
 type Props = NativeStackScreenProps<SchedulesNavigationStack, 'AddSchedule'>
 
 
 export const AddScheduleScreen = ({ navigation, route }: Props) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
 
     const editId = route.params?.id
     const existSchedule = useSelector((state: RootState) =>
@@ -33,6 +32,9 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         dayOfMonth: existSchedule.dayOfMonth,
         startDate: existSchedule.startDate,
         endDate: existSchedule.endDate,
+        repeatReminderEnabled: existSchedule.repeatReminderEnabled,
+        repeatReminderIntervalMinutes: existSchedule.repeatReminderIntervalMinutes,
+        repeatReminderMaxCount: existSchedule.repeatReminderMaxCount,
     } : undefined
 
     const [dropdownVisible, setDropdownVisible] = useState(false)
@@ -61,11 +63,9 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         }
 
         if (existSchedule) {
-            dispatch(updateSchedule(schedule))
-            await notificationService.updateScheduleNotifications(schedule)
+            dispatch(updateScheduleThunk(schedule))
         } else {
-            dispatch(addSchedule(schedule))
-            await notificationService.scheduleNotification(schedule)
+            dispatch(createScheduleThunk(schedule))
         }
 
         navigation.goBack()
@@ -75,8 +75,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         if (!editId) {
             return
         }
-        dispatch(removeSchedule(editId))
-        await notificationService.cancelScheduleNotifications(editId)
+        dispatch(removeScheduleThunk(editId))
         navigation.goBack()
     }
 
@@ -92,7 +91,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
                 {editId && (
                     <AppButton
                         title="Удалить расписание"
-                        variant='primary'
+                        variant='danger'
                         onPress={handleDelete}
                     />
                 )}

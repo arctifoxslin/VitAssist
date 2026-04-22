@@ -5,6 +5,9 @@ export interface MatrixCell {
     day: Date
     time: string
     status?: IntakeStatus
+    plannedFor: number
+    scheduleId: string
+    skipReason: Intake["skipReason"]
 }
 
 export interface ScheduleMatrix {
@@ -15,7 +18,7 @@ export interface ScheduleMatrix {
 
 function getDaysRange(start: number, end?: number): Date[] {
     const startDate = new Date(start)
-    const endDate =new Date(end ?? Date.now())
+    const endDate = new Date(end ?? Date.now())
     const days: Date[] = []
 
     const current = new Date(
@@ -41,7 +44,7 @@ function getDaysRange(start: number, end?: number): Date[] {
 export function buildScheduleMatrix(
     schedule: Schedule,
     intakes: Intake[]
-){
+) {
     const days = getDaysRange(schedule.startDate, schedule.endDate)
     const times = schedule.times
 
@@ -54,21 +57,33 @@ export function buildScheduleMatrix(
     const cells: Record<string, Record<string, MatrixCell>> = {}
 
     //cells[dayKey][time] = cell
-    for(const day of days) {
+    for (const day of days) {
         const dayKey = day.toDateString()
         cells[dayKey] = {}
 
-        for(const time of times){
+        for (const time of times) {
             const key = `${time}-${dayKey}`
             const intake = intakeMap.get(key)
+
+            const plannedFor = (() => {
+                const [hh, mm] = time.split(":").map(Number)
+                const d = new Date(day)
+                d.setHours(hh)
+                d.setMinutes(mm)
+                d.setSeconds(0)
+                return d.getTime()
+            })()
 
             cells[dayKey][time] = {
                 day,
                 time,
                 status: intake?.status,
+                plannedFor,
+                scheduleId: schedule.id,
+                skipReason: intake?.skipReason
             }
         }
     }
 
-    return {days, times, cells}
+    return { days, times, cells }
 }

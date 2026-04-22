@@ -5,8 +5,9 @@
     - update schedule
 */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Schedule } from "../../shared/types/Schedule";
+import { notificationService } from "../../shared/notifications/NotificationService";
 
 interface SchedulesState {
     list: Schedule[]
@@ -28,7 +29,7 @@ export const schedulesSlice = createSlice({
         },
         updateSchedule: (state, action: PayloadAction<Schedule>) => {
             const index = state.list.findIndex(s => s.id === action.payload.id)
-            if(index !== -1) {
+            if (index !== -1) {
                 state.list[index] = action.payload
             }
         },
@@ -37,3 +38,28 @@ export const schedulesSlice = createSlice({
 
 export const { addSchedule, removeSchedule, updateSchedule } = schedulesSlice.actions
 export const schedulesReducer = schedulesSlice.reducer
+
+export const createScheduleThunk = createAsyncThunk(
+    'schedules/create',
+    async (schedule: Schedule, { dispatch }) => {
+        dispatch(addSchedule(schedule))
+        await notificationService.onScheduleCreated(schedule)
+    }
+)
+
+export const updateScheduleThunk = createAsyncThunk(
+    'schedules/update',
+    async (schedule: Schedule, { dispatch }) => {
+        dispatch(updateSchedule(schedule))
+        await notificationService.cancelForSchedule(schedule.id)
+        await notificationService.onScheduleCreated(schedule)
+    }
+)
+
+export const removeScheduleThunk = createAsyncThunk(
+    'schedules/remove',
+    async (scheduleId: string, { dispatch }) => {
+        dispatch(removeSchedule(scheduleId))
+        await notificationService.cancelForSchedule(scheduleId)
+    }
+)

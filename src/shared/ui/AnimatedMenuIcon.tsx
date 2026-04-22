@@ -39,7 +39,7 @@ export const AnimatedMenuIcon = ({ open, size = 22, color = "#000" }: Props) => 
         outputRange: ["0deg", "180deg"],
     })
 
-    const iconName: IconName = open ? "x" : "arrow-down-right"
+    const iconName: IconName = open ? "chevron-up" : "chevron-down"
 
     return (
         <Animated.View style={{
