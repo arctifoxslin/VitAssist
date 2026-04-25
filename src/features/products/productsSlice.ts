@@ -5,8 +5,9 @@
     - update remain
 */
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Product } from "../../shared/types/Product";
+import { productRepository } from "../../shared/product/ProductRepository";
 
 interface ProductState {
     list: Product[]
@@ -48,3 +49,19 @@ export const productsSlice = createSlice({
 
 export const { addProduct, archiveProduct, unarchiveProduct, updateProduct } = productsSlice.actions
 export const productsReducer = productsSlice.reducer
+
+export const createProductThunk = createAsyncThunk(
+    'products/create',
+    async (product: Product, { dispatch }) => {
+        await productRepository.add(product)
+        dispatch(addProduct(product))
+    }
+)
+
+export const updateProductThunk = createAsyncThunk(
+    'products/update',
+    async (product: Product, { dispatch }) => {
+        await productRepository.update(product)
+        dispatch(updateProduct(product))
+    }
+)

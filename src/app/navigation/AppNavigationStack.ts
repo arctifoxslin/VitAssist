@@ -3,7 +3,7 @@ import { IntakeNavigationStack } from "../../features/intake/IntakeNavigationSta
 import { ProductsNavigationStack } from "../../features/products/ProductsNavigationStack"
 
 export type AppNavigationStack = {
-  ScheduleNavigationMap: undefined
-  ProductsNavigationMap: NavigatorScreenParams<ProductsNavigationStack>
-  IntakeNavigationMap: NavigatorScreenParams<IntakeNavigationStack>
+  ScheduleNavigationMap: { headerTitle?: string } | undefined
+  ProductsNavigationMap: NavigatorScreenParams<ProductsNavigationStack> & { headerTitle?: string }
+  IntakeNavigationMap: NavigatorScreenParams<IntakeNavigationStack> & { headerTitle?: string }
 }

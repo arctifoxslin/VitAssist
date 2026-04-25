@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { View, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { unarchiveProduct } from "../productsSlice";
 import { selectArchivedProducts } from "../productsSelectors";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ProductsNavigationStack } from "../ProductsNavigationStack";
+import { useNavigation } from "@react-navigation/native";
+import { AppScreen } from "../../../shared/ui/AppScreen";
+import { AppCard } from "../../../shared/ui/AppCard";
+
+type Navigation = NativeStackNavigationProp<ProductsNavigationStack, 'ProductsList'>
 
 export const ArchivedProductsScreen = () => {
+    const navigation = useNavigation<Navigation>()
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Архив препаратов"
+        })
+    }, [])
     const dispatch = useDispatch()
 
     const archivedProducts = useSelector(selectArchivedProducts)
@@ -24,33 +37,32 @@ export const ArchivedProductsScreen = () => {
         )
     }
     return (
-        <FlatList
-            contentContainerStyle={{ padding: 16, gap: 16 }}
-            data={archivedProducts}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-                <View style={{
-                    padding: 16,
-                    borderRadius: 12,
-                    backgroundColor: "#f2f2f2",
-                    gap: 8
-                }}>
-                    <AppText variant='h2'>
-                        {item.name}
-                    </AppText>
-                    {item.notes && (
-                        <AppText variant='body' style={{ opacity: 0.7 }}>
-                            {item.notes}
-                        </AppText>
-                    )}
+        <AppScreen>
+            <FlatList
+                data={archivedProducts}
+                contentContainerStyle={{ padding: 16, gap: 16 }}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <AppCard row={true}>
+                        <View>
+                            <AppText variant="h3">
+                                {item.name}
+                            </AppText>
+                            {item.notes && (
+                                <AppText variant='body' style={{ opacity: 0.7 }}>
+                                    {item.notes}
+                                </AppText>
+                            )}
+                        </View>
+                        <AppButton
+                            title="Вернуть в список"
+                            variant='primary'
+                            onPress={() => handleUnarchive(item.id)}
+                        />
+                    </AppCard>
 
-                    <AppButton
-                        title="Вернуть в список"
-                        variant='primary'
-                        onPress={() => handleUnarchive(item.id)}
-                    />
-                </View>
-            )}
-        />
+                )}
+            />
+        </AppScreen>
     )
 }

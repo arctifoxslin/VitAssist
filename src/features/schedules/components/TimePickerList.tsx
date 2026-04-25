@@ -36,20 +36,21 @@ export const TimePickerList = ({ times, onChange }: Props) => {
     }
 
     return (
-        <View style={{ gap: 12 }}>
-            <View style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                gap: 8
-            }}>
-                {times.map((t, i) => (
-                    <AppChip
-                        key={i}
-                        label={t}
-                        onClose={() => onChange(times.filter((_, idx) => idx !== i))}
-                    />
-                ))}
-            </View>
+        <View style={{ gap: 16 }}>
+            {times.length > 0 && (
+                <View style={{
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                }}>
+                    {times.map((t, i) => (
+                        <AppChip
+                            key={i}
+                            label={t}
+                            onClose={() => onChange(times.filter((_, idx) => idx !== i))}
+                        />
+                    ))}
+                </View>
+            )}
             <AppButton
                 title="Добавить время"
                 variant='secondary'

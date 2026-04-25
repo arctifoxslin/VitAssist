@@ -1,23 +1,29 @@
-import React, { useState } from "react";
-import { ScrollView, View } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
-import { addProduct, updateProduct, archiveProduct } from "../productsSlice";
+import { archiveProduct, createProductThunk, updateProductThunk } from "../productsSlice";
 import { Product, ProductDraft } from "../../../shared/types/Product";
 import { UNIT_TYPES_BY_FORM } from "../../../shared/types/units";
 import { ProductForm } from "../components/ProductForm";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ProductsNavigationStack } from "../ProductsNavigationStack";
-import { RootState } from "../../../app/store/store";
+import { AppDispatch } from "../../../app/store/store";
 import uuid from "react-native-uuid";
 import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
 import { selectActiveProducts } from "../productsSelectors";
 import { isCountableUnit } from "../../../shared/types/countableUnits";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Props = NativeStackScreenProps<ProductsNavigationStack, 'AddProduct'>
 
 export const AddProductScreen = ({ navigation, route }: Props) => {
-    const dispatch = useDispatch()
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Новый препарат"
+        })
+    }, [])
+
+    const dispatch = useDispatch<AppDispatch>()
 
     const editId = route.params?.id
 
@@ -69,9 +75,9 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
         }
 
         if (existProduct) {
-            dispatch(updateProduct(product))
+            dispatch(updateProductThunk(product))
         } else {
-            dispatch(addProduct(product))
+            dispatch(createProductThunk(product))
         }
 
         navigation.goBack()
@@ -87,7 +93,7 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
 
     return (
         <>
-            <ScrollView contentContainerStyle={{ padding: 32, gap: 24 }}>
+            <AppScreen scroll>
                 <ProductForm
                     initialDraft={initialDraft}
                     onSubmit={handleSubmit}
@@ -103,7 +109,7 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
                         onPress={handleArchive}
                     />
                 )}
-            </ScrollView>
+            </AppScreen>
 
 
             <DropdownMenu

@@ -8,6 +8,7 @@ import { View, Pressable } from "react-native";
 import { UNIT_TYPE_LABELS } from "../../../shared/types/units";
 import { formatTimeDiff } from "../../intake/utils/formatTimeDiff";
 import { getNextIntake } from "../../../shared/utils/generatePlannedIntakes";
+import { COLORS } from "../../../shared/ui/theme/colors";
 
 interface Props {
     schedule: Schedule
@@ -22,12 +23,12 @@ export const ScheduleCard = ({ schedule, now, onPress }: Props) => {
 
     return (
         <Pressable onPress={onPress}>
-            <AppCard style={{ marginBottom: 12, gap: 12 }}>
+            <AppCard>
                 <View>
                     <AppText variant="title">
                         {selected?.name ?? 'Неизвестный препарат'}
                     </AppText>
-                    <AppText variant="subtitle" color="#666">
+                    <AppText variant="subtitle" color={COLORS.textSecondary}>
                         {schedule.times.join(', ')}
                     </AppText>
                     <AppText variant="subtitle">

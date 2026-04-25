@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { ScrollView } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { useDispatch, useSelector } from "react-redux";
 import { updateScheduleThunk, createScheduleThunk, removeScheduleThunk } from "../schedulesSlice";
@@ -10,11 +9,17 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
 import { AppDispatch, RootState } from "../../../app/store/store";
 import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Props = NativeStackScreenProps<SchedulesNavigationStack, 'AddSchedule'>
 
 
 export const AddScheduleScreen = ({ navigation, route }: Props) => {
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Новое расписание"
+        })
+    }, [])
     const dispatch = useDispatch<AppDispatch>()
 
     const editId = route.params?.id
@@ -81,7 +86,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
 
     return (
         <>
-            <ScrollView contentContainerStyle={{ padding: 32, gap: 24 }}>
+            <AppScreen scroll>
                 <ScheduleForm
                     initialDraft={initialDraft}
                     onSubmit={handleSubmit}
@@ -95,7 +100,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
                         onPress={handleDelete}
                     />
                 )}
-            </ScrollView>
+            </AppScreen>
 
             <DropdownMenu
                 visible={dropdownVisible}

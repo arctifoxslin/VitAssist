@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
@@ -9,10 +9,19 @@ import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { intakeService } from "../../../shared/intake/IntakeService";
 import { notificationService } from "../../../shared/notifications/NotificationService";
+import { formatTimeFromTimestamp } from "../../../shared/utils/formatTimeFromTimestamp";
+import { UNIT_TYPE_LABELS } from "../../../shared/types/units";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Props = NativeStackScreenProps<IntakeNavigationStack, "IntakeScreen">
 
 export const IntakeScreen = ({ navigation, route }: Props) => {
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Отметить приём"
+        })
+    }, [])
+
     const { scheduleId, plannedTime } = route.params
 
     const schedule = useSelector((state: RootState) =>
@@ -32,6 +41,7 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
             </View>
         )
     }
+    const intakeTime = formatTimeFromTimestamp(plannedTime)
     //timestamp for planned intake
     /*const plannedFor = (() => {
         const [hh, mm] = time.split(":").map(Number)
@@ -55,32 +65,32 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
     }
 
     const handleDelayed = async () => {
-        await notificationService.ScheduleSnoozed(schedule, plannedTime)
+        await notificationService.scheduleSnoozed(schedule, plannedTime)
         navigation.goBack()
     }
 
     return (
-        <View style={{ padding: 16, gap: 16 }}>
-            <AppCard style={{ padding: 16 }}>
+        <AppScreen style={{ padding: 16, gap: 12 }}>
+            <AppCard>
                 <AppText variant='h2'>
                     {product.name}
                 </AppText>
-                <AppText variant='body' style={{ opacity: 0.7 }}>
-                    Дозировка: {product.dosage} {product.unitType}
+                <AppText variant='body'>
+                    Дозировка: {schedule.dosage} {UNIT_TYPE_LABELS[product.unitType]}
                 </AppText>
-                <AppText variant='body' style={{ opacity: 0.7 }}>
-                    Время приёма: {plannedTime}
+                <AppText variant='body'>
+                    Время приёма: {intakeTime}
                 </AppText>
             </AppCard>
 
             <AppButton
                 title="Принято"
-                variant="secondary"
+                variant="primary"
                 onPress={handleTaken}
             />
             <AppButton
                 title="Пропущено"
-                variant="primary"
+                variant="danger"
                 onPress={handleSkipped}
             />
             <AppButton
@@ -88,6 +98,6 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
                 variant="secondary"
                 onPress={handleDelayed}
             />
-        </View>
+        </AppScreen>
     )
 }

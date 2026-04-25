@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Switch } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppInput } from "../../../shared/ui/AppInput";
-import { AppSelect } from "../../../shared/ui/AppSelector";
+import { AppSelect } from "../../../shared/ui/AppSelect";
 
 interface Props {
     enable: boolean
@@ -38,6 +38,7 @@ export const RepeatReminderSelector = ({
         { label: "1", value: 1 },
         { label: "2", value: 2 },
         { label: "3", value: 3 },
+        { label: "бесконечно", value: "infinite" },
         { label: "своё значение", value: "custom" },
     ]
 
@@ -70,7 +71,7 @@ export const RepeatReminderSelector = ({
                                 setIntervalMode("custom")
                                 onIntervalChange(null)
                             } else {
-                                setCountMode("preset")
+                                setIntervalMode("preset")
                                 onIntervalChange(v as number)
                             }
                         }}
@@ -103,13 +104,22 @@ export const RepeatReminderSelector = ({
 
                     <AppSelect
                         label="Максимальное количество повторов"
-                        value={countMode === "custom" ? "custom" : maxCount}
+                        placeholder="бесконечно"
+                        value={countMode === "custom"
+                            ? "custom"
+                            : maxCount === null
+                                ? "infinite"
+                                : maxCount}
                         options={countOptions}
                         onChange={(v) => {
                             if (v === "custom") {
                                 setCountMode("custom")
                                 onMaxCountChange(null)
-                            } else {
+                            } else if (v === "infinite") {
+                                setCountMode("preset")
+                                onMaxCountChange(null)
+                            }
+                            else {
                                 setCountMode("preset")
                                 onMaxCountChange(v as number)
                             }

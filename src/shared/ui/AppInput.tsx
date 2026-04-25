@@ -44,7 +44,7 @@ export const AppInput = ({ label, error, style, ...rest }: Props) => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginBottom: 16,
+    gap: 6,
   },
 
   label: {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   input: {
     height: 48,
     borderWidth: 1,
-    borderRadius: 8,
+    borderRadius: 12,
     paddingHorizontal: 12,
     fontSize: 16,
     color: COLORS.textPrimary,

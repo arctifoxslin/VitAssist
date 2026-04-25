@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppInput } from "../../../shared/ui/AppInput";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { ProductDraft } from "../../../shared/types/Product";
-import { FormUnitType, UnitType, UNIT_TYPES_BY_FORM } from "../../../shared/types/units";
-import { UnitTypeSelector } from "./UnitTypeSelector";
-import { FormSelector } from "./FormSelector";
+import { FormUnitType, UnitType, UNIT_TYPES_BY_FORM, FORM_LABELS, UNIT_TYPE_LABELS } from "../../../shared/types/units";
 import { DropdownItem } from "../../../shared/ui/DropdownMenu";
 import { isCountableUnit } from "../../../shared/types/countableUnits";
+import { AppSelect } from "../../../shared/ui/AppSelect";
 
 interface Props {
     initialDraft?: ProductDraft
@@ -35,6 +34,14 @@ export const ProductForm = ({
     const [unitType, setUnitType] = useState<UnitType>('pill')
     const [form, setForm] = useState<FormUnitType>('pill')
     const [notes, setNotes] = useState('')
+    const formOptions = (Object.keys(FORM_LABELS) as FormUnitType[]).map(key => ({
+        label: FORM_LABELS[key],
+        value: key,
+    }))
+    const unitOptions = UNIT_TYPES_BY_FORM[form].map(unit => ({
+        label: UNIT_TYPE_LABELS[unit],
+        value: unit,
+    }))
 
     useEffect(() => {
         if (initialDraft) {
@@ -78,90 +85,81 @@ export const ProductForm = ({
     const shouldShowUnitType = !['pill', 'capsule', 'injection', 'spray'].includes(form)
 
     return (
-        <ScrollView contentContainerStyle={{ gap: 24 }}>
-            <View>
+        <View style={{ gap: 16 }}>
 
-                <AppText variant='h3'>
-                    Название
-                </AppText>
-                <AppInput
-                    value={name}
-                    onChangeText={setName}
-                />
+            <AppText variant='h2'>
+                Название
+            </AppText>
+            <AppInput
+                value={name}
+                onChangeText={setName}
+            />
 
-                <AppText variant='h3'>
-                    Дозировка препарата
-                </AppText>
-                <AppText variant="caption">
-                    Количество активного вещества
-                </AppText>
-                <AppInput
-                    value={dosage}
-                    onChangeText={setDosage}
-                />
-
-
-                <AppText variant='h3'>
-                    Форма препарата
-                </AppText>
-                <AppText variant="caption">
-                    Физическая форма препарата
-                </AppText>
-                <FormSelector
-                    value={form}
-                    onChange={handleFormChange}
-                    openDropdown={(items, position) => openDropdown('form', items, position)}
-                    dropdownOpen={dropdownOpen && dropdownOwner === 'form'}
-                />
+            <AppText variant='h2'>
+                Дозировка препарата
+            </AppText>
+            <AppText variant="subtitle">
+                Количество активного вещества
+            </AppText>
+            <AppInput
+                value={dosage}
+                onChangeText={setDosage}
+            />
+            <AppText variant='h2'>
+                Форма препарата
+            </AppText>
+            <AppSelect
+                label="Физическая форма препарата"
+                value={form}
+                options={formOptions}
+                onChange={(v) => handleFormChange(v as FormUnitType)}
+            />
 
 
-                {shouldShowUnitType && (
-                    <>
-                        <AppText variant='h3'>
-                            Единица разового приёма
-                        </AppText>
-                        <AppText variant="caption">
-                            Единица измерения разового приёма: 2 капли, 1 таблетка, 5 мл...
-                        </AppText>
-                        <UnitTypeSelector
-                            form={form}
-                            value={unitType}
-                            onChange={setUnitType}
-                            openDropdown={(items, position) => openDropdown('unitType', items, position)}
-                            dropdownOpen={dropdownOpen && dropdownOwner === 'unitType'}
-                        />
+            {shouldShowUnitType && (
+                <>
+                    <AppText variant='h2'>
+                        Единица разового приёма
+                    </AppText>
 
-                    </>
-                )}
-                {isCountableUnit(unitType) && (
-                    <>
-                        <AppText variant='h3'>
-                            Количество в упаковке
-                        </AppText>
-                        <AppInput
-                            value={totalUnits}
-                            onChangeText={setTotalUnits}
-                            keyboardType="numeric"
-                        />
-                    </>
-                )}
+                    <AppSelect
+                        label="Единица измерения разового приёма: 2 капли, 1 таблетка, 5 мл..."
+                        value={unitType}
+                        options={unitOptions}
+                        onChange={(v) => setUnitType(v as UnitType)}
+                    />
 
-                <AppText variant='h3'>
-                    Примечание
-                </AppText>
-                <AppInput
-                    value={notes}
-                    onChangeText={setNotes}
-                    multiline
-                />
 
-                <AppButton
-                    title="Сохранить"
-                    variant="primary"
-                    onPress={handleSubmit}
-                    disabled={!isValid()}
-                />
-            </View>
-        </ScrollView>
+                </>
+            )}
+            {isCountableUnit(unitType) && (
+                <>
+                    <AppText variant='h2'>
+                        Количество в упаковке
+                    </AppText>
+                    <AppInput
+                        value={totalUnits}
+                        onChangeText={setTotalUnits}
+                        keyboardType="numeric"
+                    />
+                </>
+            )}
+
+            <AppText variant='h3'>
+                Примечание
+            </AppText>
+            <AppInput
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+            />
+
+            <AppButton
+                title="Сохранить"
+                variant="primary"
+                onPress={handleSubmit}
+                disabled={!isValid()}
+            />
+        </View>
     )
 }

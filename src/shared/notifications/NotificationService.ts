@@ -2,23 +2,32 @@ import { notificationAPI } from "./notificationAPI";
 import { notificationRepository } from "./NotificationRepository";
 import { Schedule } from "../types/Schedule";
 import { generateNotificationId } from "../../features/notifications/id";
-import { intakeService } from "../intake/IntakeService";
-import { getNextIntake, getPastIntakes, getNextIntakeTimeAfter } from "../utils/generatePlannedIntakes";
+import { getNextIntake } from "../utils/generatePlannedIntakes";
+import { productRepository } from "../product/ProductRepository";
+import { store } from "../../app/store/store";
+import { intakeRepository } from "../intake/IntakeRepository";
+import { NotificationData } from "../types/Notification";
+
 class NotificationService {
     /*------Schedule Primary Notifications------*/
     async schedulePrimary(schedule: Schedule, plannedTime: number) {
-        const id = generateNotificationId('primary', schedule.id, String(plannedTime))
+        const id = generateNotificationId('intake', schedule.id, String(plannedTime))
+        const product = await productRepository.getById(schedule.productId)
+        const productName = product?.name ?? "препарат"
+
+        await notificationAPI.cancelSchedule(id)
+        await notificationRepository.remove(id)
+
 
         await notificationAPI.schedule({
             id,
             title: 'Время приёма',
-            body: 'Пора принять препарат',
+            body: `Пора принять ${productName}`,
             timestamp: plannedTime,
             data: {
-                type: 'intake_reminder',
+                type: 'primary',
                 scheduleId: schedule.id,
                 plannedTime: String(plannedTime),
-                isRepeatReminder: 'false',
                 repeatIndex: '0',
             },
         })
@@ -38,93 +47,78 @@ class NotificationService {
     async scheduleRepeats(
         schedule: Schedule,
         plannedTime: number,
-        nextIntakeTime: number | null
+        repeatIndex: number,
     ) {
-        if (!schedule.repeatReminderEnabled) {
-            return
-        }
+        if (!schedule.repeatReminderEnabled) return
 
         const repeatInterval = schedule.repeatReminderIntervalMinutes!
         const repeatMaxCount = schedule.repeatReminderMaxCount
 
-        const endOfDay = new Date(plannedTime)
-        endOfDay.setHours(23, 59, 59, 999)
-        const limitTime = Math.min(
-            nextIntakeTime ?? endOfDay.getTime(),
-            endOfDay.getTime()
-        )
+        if (repeatMaxCount !== null && repeatIndex > repeatMaxCount) return
 
-        let repeatIndex = 1
+        const repeatTime = plannedTime + repeatInterval * repeatIndex * 60_000
 
-        while (true) {
-            /*
-            Interval stored in minutes so we convert
-            it to miliseconds (*60_000) because timestamp counts in ms
-            and Notifee accepts timestamp
-            */
-            const repeatTime = plannedTime + repeatInterval * repeatIndex * 60_000
+        const now = Date.now()
+        if (repeatTime <= now) return
 
-            if (repeatTime >= limitTime) {
-                break
-            }
-            if (repeatMaxCount !== null && repeatIndex > repeatMaxCount) {
-                break
-            }
+        const id = generateNotificationId('intake', schedule.id, String(plannedTime))
+        const product = await productRepository.getById(schedule.productId)
+        const productName = product?.name ?? "препарата"
 
-            const id = generateNotificationId('repeat', schedule.id, String(repeatTime))
+        await notificationAPI.cancelSchedule(id)
+        await notificationRepository.remove(id)
 
-            await notificationAPI.schedule({
-                id,
-                title: 'Напоминание о приёме',
-                body: 'Вы не отметили приём',
-                timestamp: repeatTime,
-                data: {
-                    type: 'intake_reminder',
-                    scheduleId: schedule.id,
-                    plannedTime: String(plannedTime),
-                    isRepeatReminder: 'true',
-                    repeatIndex: String(repeatIndex),
-                },
-            })
-
-            await notificationRepository.add({
-                id,
+        await notificationAPI.schedule({
+            id,
+            title: 'Напоминание о приёме',
+            body: `Вы не отметили приём ${productName}`,
+            timestamp: repeatTime,
+            data: {
+                type: 'repeat',
                 scheduleId: schedule.id,
-                plannedTime,
-                isRepeatReminder: true,
-                repeatIndex,
-            })
-            repeatIndex++
+                plannedTime: String(plannedTime),
+                repeatIndex: String(repeatIndex),
+            },
+        })
 
-            console.log("[NotificationService:Repeat] Scheduled:", id, "at", new Date(repeatTime).toString())
-        }
+        await notificationRepository.add({
+            id,
+            scheduleId: schedule.id,
+            plannedTime,
+            isRepeatReminder: true,
+            repeatIndex,
+        })
+
+        console.log("[NotificationService:Repeat] Scheduled:", id, "at", new Date(repeatTime).toString())
+
     }
 
     /*------Schedule Reminders for user_dalayed action------*/
-    async ScheduleSnoozed(
+    async scheduleSnoozed(
         schedule: Schedule,
         plannedTime: number,
     ) {
         const repeatInterval = schedule.repeatReminderEnabled
             ? schedule.repeatReminderIntervalMinutes!
             : 120 /*set default interval for single reminder for 2 hours*/
-
         const snoozeTime = Date.now() + repeatInterval * 60_000
 
-        const id = generateNotificationId('snooze', schedule.id, String(snoozeTime))
+        const id = generateNotificationId('snooze', schedule.id, String(plannedTime))
+        const product = await productRepository.getById(schedule.productId)
+        const productName = product?.name ?? "препарат"
+
+        await notificationAPI.cancelSchedule(id)
+        await notificationRepository.remove(id)
 
         await notificationAPI.schedule({
             id,
             title: 'Отложенное напоминание',
-            body: 'Пора принять препарат',
+            body: `Пора принять ${productName}`,
             timestamp: snoozeTime,
             data: {
-                type: 'intake_reminder',
+                type: 'snooze',
                 scheduleId: schedule.id,
                 plannedTime: String(plannedTime),
-                isRepeatReminder: 'false',
-                repeatIndex: '0',
-                isSnoozed: 'true',
             },
         })
 
@@ -152,20 +146,12 @@ class NotificationService {
 
     /*------Schedule next reminder for Intake (primary and repeat)------*/
     async planNext(schedule: Schedule) {
-        /*check unmarked intakes*/
-        const now = Date.now()
-        const plannedTimes = getPastIntakes(schedule)
-        intakeService.checkMissed(schedule, plannedTimes)
-
         const nextTime = getNextIntake(schedule)
-        const nextAfterPrimary = getNextIntakeTimeAfter(schedule, nextTime)
+        if (!nextTime) return
 
-        if (nextTime) {
-            await this.schedulePrimary(schedule, nextTime)
-            await this.scheduleRepeats(schedule, nextTime, nextAfterPrimary)
-        }
+        await this.schedulePrimary(schedule, nextTime)
 
-        console.log("[NotificationService:PlanNext] Next intake:", nextTime ? new Date(nextTime).toString() : "none")
+        console.log("[NotificationService:PlanNext] Next intake:", new Date(nextTime).toString())
     }
 
     /*------Create Notification for schedule------*/
@@ -198,6 +184,39 @@ class NotificationService {
             console.log("[NotificationService:cancelAll] Cancel notification:", n.id)
         }
         await notificationRepository.saveAll([])
+    }
+
+    async onNotificationRecieved(data: NotificationData) {
+        if (
+            data.type === 'primary' ||
+            data.type === 'repeat' ||
+            data.type === 'snooze'
+        ) {
+            const scheduleId = data.scheduleId
+            const plannedTime = Number(data.plannedTime)
+            const repeatIndex = Number(data.repeatIndex)
+            const schedule = store.getState().schedules.list.find(s => s.id === scheduleId)
+            if (!schedule) return
+
+            const intake = await intakeRepository.findByScheduleAndTime(scheduleId, plannedTime)
+
+            if (intake?.status === "taken") {
+                await this.cancelForIntake(scheduleId, plannedTime)
+                return
+            }
+
+            if (data.type === "primary") {
+                await this.scheduleRepeats(schedule, plannedTime, 1)
+            }
+
+            if (data.type === "repeat") {
+                await this.scheduleRepeats(schedule, plannedTime, repeatIndex + 1)
+            }
+
+            if (data.type === "snooze") {
+                await this.scheduleRepeats(schedule, plannedTime, 1)
+            }
+        }
     }
 
 }

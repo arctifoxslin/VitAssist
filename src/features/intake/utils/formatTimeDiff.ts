@@ -1,6 +1,6 @@
 export function formatTimeDiff(targetTs: number, now: number = Date.now()): string {
     const diff = targetTs - now
-    if (diff <= 0) {
+    if (diff <= 60_000) {
         return "сейчас"
     }
 

@@ -41,7 +41,7 @@ export const DateRangePicker = ({ startDate, endDate, onChange }: Props) => {
     }
 
     return (
-        <View style={{ gap: 12 }}>
+        <View style={{ gap: 16 }}>
             <AppButton
                 title={`Начало: ${new Date(startDate).toLocaleDateString()}`}
                 variant='secondary'

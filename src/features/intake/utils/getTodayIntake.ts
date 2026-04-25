@@ -18,6 +18,7 @@ export function getTodayIntake(schedules: Schedule[]): TodayIntake[] {
             plannedDate.setHours(hh)
             plannedDate.setMinutes(mm)
             plannedDate.setSeconds(0)
+            plannedDate.setMilliseconds(0)
 
             return {
                 scheduleId: schedule.id,

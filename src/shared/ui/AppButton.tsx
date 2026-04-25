@@ -99,7 +99,7 @@ const getStyles = (variant: Variant, disabled: boolean) => {
     return StyleSheet.create({
         button: {
             height: 48,
-            borderRadius: 10,
+            borderRadius: 12,
             backgroundColor: disabled
                 ? COLORS.textDisabled
                 : background,

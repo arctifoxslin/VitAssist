@@ -7,13 +7,12 @@ export interface DropdownItem {
     label: string
     onPress: () => void
     disabled?: boolean
-    separator?: boolean
 }
 
 interface Props {
     visible: boolean
     items: DropdownItem[]
-    position: { x: number, y: number }
+    position: { x: number, y: number, width?: number }
     onClose: () => void
 }
 
@@ -25,7 +24,7 @@ export const DropdownMenu = ({ visible, items, position, onClose }: Props) => {
 
     const safeItems = items.length > 0
         ? items
-        : [{ label: "Список пуст", onPress: onClose, disabled: true, separator: false }]
+        : [{ label: "Список пуст", onPress: onClose, disabled: true }]
 
     useEffect(() => {
         if (visible) {
@@ -66,6 +65,7 @@ export const DropdownMenu = ({ visible, items, position, onClose }: Props) => {
                     {
                         top: position.y + 4,
                         left,
+                        width: position.width ?? undefined,
                         opacity,
                         transform: [{ scale }],
                     },
@@ -77,10 +77,6 @@ export const DropdownMenu = ({ visible, items, position, onClose }: Props) => {
                     showsVerticalScrollIndicator={false}
                 >
                     {safeItems.map((item, i) => {
-                        if (item.separator) {
-                            return <View key={i} style={styles.separator} />
-                        }
-
                         return (
                             <Pressable
                                 key={i}
@@ -120,24 +116,20 @@ const styles = StyleSheet.create({
     menu: {
         position: "absolute",
         backgroundColor: COLORS.surface,
-        borderRadius: 8,
-        paddingVertical: 8,
-        elevation: 6,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
+        borderRadius: 12,
+
+        elevation: 4,
+        shadowColor: COLORS.shadow,
+        shadowOpacity: 1,
         shadowRadius: 6,
         shadowOffset: { width: 0, height: 2 },
         minWidth: 160,
     },
 
     item: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-    },
-
-    separator: {
-        height: 1,
-        backgroundColor: "#00000015",
-        marginVertical: 4,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: COLORS.border,
     },
 })

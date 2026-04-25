@@ -1,18 +1,24 @@
 import React, { useLayoutEffect } from "react";
-import { ScrollView } from "react-native";
+import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import { ProductCard } from "../components/ProductCard";
-import { AddProductButton } from "../components/AddProductButton";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { ProductsNavigationStack } from "../ProductsNavigationStack";
 import { AppButton } from "../../../shared/ui/AppButton"
 import { useNavigation } from "@react-navigation/native";
 import { selectActiveProducts } from "../productsSelectors";
+import { AppScreen } from "../../../shared/ui/AppScreen";
+import { Fab } from "../../../shared/ui/PlusButton";
 
 type Navigation = NativeStackNavigationProp<ProductsNavigationStack, 'ProductsList'>
 
 export const ProductListScreen = () => {
     const navigation = useNavigation<Navigation>()
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Препараты"
+        })
+    }, [])
     const products = useSelector(selectActiveProducts)
 
     useLayoutEffect(() => {
@@ -27,19 +33,24 @@ export const ProductListScreen = () => {
     }, [navigation])
 
     return (
-        <>
-            <ScrollView style={{ padding: 16 }}>
-                {products.map(p => (
+        <AppScreen>
+            <FlatList
+                data={products}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ padding: 16, gap: 12 }}
+                renderItem={({ item }) => (
                     <ProductCard
-                        key={p.id}
-                        product={p}
-                        onPress={() => navigation.navigate('AddProduct', { id: p.id })}
+                        key={item.id}
+                        product={item}
+                        onPress={() => navigation.navigate('AddProduct', { id: item.id })}
                     />
-                ))}
-            </ScrollView>
-            <AddProductButton
+                )}
+            />
+            <Fab
+                icon="plus"
                 onPress={() => navigation.navigate('AddProduct', {})}
             />
-        </>
+
+        </AppScreen>
     )
 }

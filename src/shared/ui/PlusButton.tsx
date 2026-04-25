@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { Icon, IconName } from "./Icon";
+import { COLORS } from "./theme/colors";
 
 interface Props {
     icon: IconName
@@ -15,8 +16,8 @@ export const Fab = ({
     icon,
     onPress,
     size = 28,
-    color = "white",
-    backgroundColor = "#6200ee",
+    color = COLORS.background,
+    backgroundColor = COLORS.primary,
     style,
 }: Props) => {
     return (
@@ -43,6 +44,10 @@ const styles = StyleSheet.create({
         borderRadius: 28,
         justifyContent: "center",
         alignItems: "center",
-        elevation: 6,
+        elevation: 4,
+        shadowColor: COLORS.shadow,
+        shadowOpacity: 1,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 4 },
     }
 })

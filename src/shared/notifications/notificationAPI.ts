@@ -102,6 +102,24 @@ class NotificationAPI {
             }
         })
     }
+
+    onNotificationRecieved(callback: (data: Record<string, any>) => void) {
+        console.log('[NotificationAPI] onNotificationReceived listener attached')
+
+        notifee.onForegroundEvent(({ type, detail }) => {
+            if (type === EventType.DELIVERED) {
+                console.log('[NotificationAPI] Foreground DELIVERED:', detail.notification?.data)
+                callback(detail.notification?.data ?? {})
+            }
+        })
+
+        notifee.onBackgroundEvent(async ({ type, detail }) => {
+            if (type === EventType.DELIVERED) {
+                console.log('[NotificationAPI] Background DELIVERED:', detail.notification?.data)
+                callback(detail.notification?.data ?? {})
+            }
+        })
+    }
 }
 
 export const notificationAPI = new NotificationAPI()

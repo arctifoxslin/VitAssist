@@ -1,16 +1,28 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { View, ScrollView } from "react-native";
+import React, { useState, useMemo, useEffect, useCallback, useLayoutEffect } from "react";
+import { View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
-import { AppButton } from "../../../shared/ui/AppButton";
-import { AppCard } from "../../../shared/ui/AppCard";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { getYearsFromSchedule } from "../utils/getYearsFromSchedule";
 import { getMonthsFromSchecule } from "../utils/getMonthsFromSchedule";
 import { ScheduleCard } from "../components/ScheduleCard";
 import { intakeService } from "../../../shared/intake/IntakeService";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { IntakeNavigationStack } from "../IntakeNavigationStack";
+import { AppScreen } from "../../../shared/ui/AppScreen";
+import { AppChip } from "../../../shared/ui/AppChip";
+
+type Navigation = NativeStackNavigationProp<IntakeNavigationStack>
 
 export const HistoryScreen = () => {
+    const navigation = useNavigation<Navigation>()
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "История приёмов"
+        })
+    }, [])
+
     const schedules = useSelector((state: RootState) =>
         state.schedules.list
     )
@@ -65,13 +77,10 @@ export const HistoryScreen = () => {
         : []
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 16, gap: 24 }}>
-            <AppText variant='h3'>
-                История
-            </AppText>
+        <AppScreen scroll>
 
             {/*FILTERS --- Year | Product*/}
-            <AppCard style={{ padding: 12, gap: 12 }}>
+            <View style={{ gap: 16 }}>
                 <AppText variant='h3'>
                     Фильтры
                 </AppText>
@@ -83,10 +92,10 @@ export const HistoryScreen = () => {
                     gap: 8
                 }}>
                     {years.map(y => (
-                        <AppButton
-                            title={String(y)}
+                        <AppChip
                             key={y}
-                            variant={y === selectedYear ? "primary" : "secondary"}
+                            label={String(y)}
+                            selected={y === selectedYear}
                             onPress={() => setSelectedYear(y)}
                         />
                     ))}
@@ -98,24 +107,21 @@ export const HistoryScreen = () => {
                     flexWrap: 'wrap',
                     gap: 8
                 }}>
-                    <AppButton
-                        title="Все препараты"
-                        variant={!selectedProductId ? "primary" : "secondary"}
+                    <AppChip
+                        label="Все препараты"
+                        selected={!selectedProductId}
                         onPress={() => setSelectedProductId(null)}
-                    >
-
-                    </AppButton>
-
+                    />
                     {products.map(p => (
-                        <AppButton
-                            title={p.name}
+                        <AppChip
                             key={p.id}
-                            variant={selectedProductId === p.id ? "primary" : "secondary"}
+                            label={p.name}
+                            selected={selectedProductId === p.id}
                             onPress={() => setSelectedProductId(p.id)}
                         />
                     ))}
                 </View>
-            </AppCard>
+            </View>
 
             {/*Group by Month*/}
             {months.map(month => {
@@ -160,6 +166,6 @@ export const HistoryScreen = () => {
                     </View>
                 )
             })}
-        </ScrollView>
+        </AppScreen>
     )
 }

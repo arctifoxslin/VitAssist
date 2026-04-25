@@ -3,6 +3,7 @@ import { View, Pressable, StyleSheet } from "react-native";
 import { AppText } from "./AppText";
 import { AppCard } from "./AppCard";
 import { Icon } from "./Icon";
+import { COLORS } from "./theme/colors";
 
 interface Option {
     label: string
@@ -29,9 +30,9 @@ export const AppSelect = ({
     const selected = options.find(o => o.value === value)
 
     return (
-        <View style={{ marginBottom: 8 }}>
+        <View style={styles.container}>
             {label && (
-                <AppText style={{ marginBottom: 4 }}>
+                <AppText variant="subtitle">
                     {label}
                 </AppText>
             )}
@@ -71,21 +72,36 @@ export const AppSelect = ({
 }
 
 const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        gap: 6,
+    },
     field: {
-        paddingVertical: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
         paddingHorizontal: 12,
+        paddingVertical: 12,
+        backgroundColor: COLORS.surface,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.border,
     },
     dropdown: {
-        marginTop: 4,
-        borderRadius: 8,
+        marginTop: 6,
+        borderRadius: 12,
         overflow: "hidden",
-        backgroundColor: "#FFFFFF",
-        elevation: 2,
+        backgroundColor: COLORS.surface,
+        elevation: 4,
+        shadowColor: COLORS.shadow,
+        shadowOpacity: 1,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 2 },
     },
     option: {
-        paddingVertical: 10,
         paddingHorizontal: 12,
+        paddingVertical: 12,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: "#E0E0E0",
+        borderBottomColor: COLORS.border,
     },
 })

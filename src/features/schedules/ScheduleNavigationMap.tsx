@@ -7,20 +7,17 @@ import { AddScheduleScreen } from "./screens/AddScheduleScreen";
 const Stack = createNativeStackNavigator<SchedulesNavigationStack>()
 
 const SchedulesNavigationMap = () => {
-    return(
+    return (
         <Stack.Navigator
-            screenOptions={{headerShown: false}}
-            initialRouteName='ScheduleList'
+            screenOptions={{ headerShown: false }}
         >
             <Stack.Screen
                 name='ScheduleList'
                 component={ScheduleListScreen}
-                options={{ title: 'Расписание' }}
             />
             <Stack.Screen
                 name='AddSchedule'
                 component={AddScheduleScreen}
-                options={{ title: 'Новое расписание' }}
             />
         </Stack.Navigator>
     )

@@ -3,7 +3,7 @@ export const COLORS = {
   textSecondary: '#4A4A4A',
   textDisabled: '#9E9E9E',
 
-  background: '#FFFFFF',
+  background: '#ffffff',
   surface: '#b8c6fd',
 
   primary: '#4A6CF7',
@@ -13,4 +13,6 @@ export const COLORS = {
   success: '#2E8B57',
 
   border: '#E0E0E0',
+
+  shadow: '#000',
 }

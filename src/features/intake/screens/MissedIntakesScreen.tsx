@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { intakeService } from "../../../shared/intake/IntakeService";
 import { intakeRepository } from "../../../shared/intake/IntakeRepository";
 import { Intake } from "../../../shared/types/Intake";
-import { ScrollView, View } from "react-native";
+import { FlatList } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { AppButton } from "../../../shared/ui/AppButton";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Props = NativeStackScreenProps<IntakeNavigationStack, "MissedIntakesScreen">
 
 export const MissedIntakesScreen = ({ navigation, route }: Props) => {
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Пропущенные приёмы"
+        })
+    }, [])
     const { scheduleId } = route.params
     const [missed, setMissed] = useState<Intake[]>([])
 
@@ -38,48 +44,38 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
         load()
     }
 
-    return (
-        <>
-            <AppButton
-                title="Назад"
-                onPress={navigation.goBack}
-                icon="chevron-left"
-                variant="secondary"
-            />
-            <ScrollView style={{ padding: 16 }}>
-                {missed.length === 0 && (
-                    <AppText variant="h3">
-                        Нет пропущенных приёмов
-                    </AppText>
-                )}
-                {missed.map((i) => (
-                    <View key={i.id}>
-                        <AppCard style={{
-                            padding: 16,
-                            gap: 12,
-                            borderRadius: 12,
-                            backgroundColor: "white",
-                            elevation: 2,
-                            flexDirection: 'row'
-                        }}>
-                            <AppText variant="h2">
-                                {new Date(i.plannedFor).toLocaleString("ru-RU", {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                })}
-                            </AppText>
-                            <AppButton
-                                title="Принято"
-                                variant="primary"
-                                onPress={() => markAsTaken(i)}
-                            />
-                        </AppCard>
-                    </View>
+    if (missed.length === 0) {
+        return (
+            <AppText variant="h3">
+                Нет пропущенных приёмов
+            </AppText>
+        )
+    }
 
-                ))}
-            </ScrollView>
-        </>
+    return (
+        <AppScreen>
+            <FlatList
+                data={missed}
+                contentContainerStyle={{ padding: 16, gap: 12 }}
+                keyExtractor={(item) => `${item.scheduleId}-${item.plannedFor}`}
+                renderItem={({ item }) => (
+                    <AppCard row={true}>
+                        <AppText variant="h3">
+                            {new Date(item.plannedFor).toLocaleString("ru-RU", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            })}
+                        </AppText>
+                        <AppButton
+                            title="Принято"
+                            variant="primary"
+                            onPress={() => markAsTaken(item)}
+                        />
+                    </AppCard>
+                )}
+            />
+        </AppScreen>
     )
 }

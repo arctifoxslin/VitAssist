@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { View, FlatList } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { ScheduleCard } from "../components/ScheduleCard";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { SchedulesNavigationStack } from "../SchedulesNavigationStack";
 import { useNavigation } from "@react-navigation/native";
-import { Fab } from "../../../shared/ui/Fab";
+import { Fab } from "../../../shared/ui/PlusButton";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Navigation = NativeStackNavigationProp<SchedulesNavigationStack, 'ScheduleList'>
 
 export const ScheduleListScreen = () => {
     const navigation = useNavigation<Navigation>()
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Все расписания"
+        })
+    }, [])
     const schedules = useSelector(
         (state: RootState) => state.schedules.list
     )
@@ -26,7 +32,7 @@ export const ScheduleListScreen = () => {
     }, [])
 
     return (
-        <View style={{ flex: 1 }}>
+        <AppScreen>
             <FlatList
                 data={schedules}
                 keyExtractor={(item) => item.id}
@@ -44,6 +50,6 @@ export const ScheduleListScreen = () => {
                 icon="plus"
                 onPress={() => navigation.navigate('AddSchedule', {})}
             />
-        </View>
+        </AppScreen>
     )
 }

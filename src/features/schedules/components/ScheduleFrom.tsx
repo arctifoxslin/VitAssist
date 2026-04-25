@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Switch } from "react-native";
+import { View } from "react-native";
 import { AppInput } from "../../../shared/ui/AppInput";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { ScheduleDraft } from "../../../shared/types/Schedule";
-import { RepeatType, REPEAT_TYPE } from "../../../shared/types/repeatRype";
+import { RepeatType, REPEAT_TYPE } from "../../../shared/types/repeatType";
 import { ProductSelector } from "./ProductSelector";
 import { TimePickerList } from "./TimePickerList";
 import { RepeatSelector } from "./RepeatSelector";
@@ -115,35 +115,31 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
     }
 
     return (
-        <ScrollView contentContainerStyle={{ gap: 24 }}>
+        <View style={{ gap: 16 }}>
             {/*Product*/}
-            <View>
-                <AppText variant='h2'>
-                    Препарат
-                </AppText>
-                <ProductSelector
-                    value={productId}
-                    onChange={setProductId}
-                    openDropdown={openDropdown}
-                    dropdownOpen={dropdownOpen}
-                />
-            </View>
+            <AppText variant='h2'>
+                Препарат
+            </AppText>
+            <ProductSelector
+                value={productId}
+                onChange={setProductId}
+                openDropdown={openDropdown}
+                dropdownOpen={dropdownOpen}
+            />
 
             {/*Invoke Time*/}
-            <View>
-                <AppText variant='h2'>
-                    Время приёма
-                </AppText>
-                <TimePickerList times={times} onChange={setTimes} />
-            </View>
+
+            <AppText variant='h2'>
+                Время приёма
+            </AppText>
+            <TimePickerList times={times} onChange={setTimes} />
 
             {/*Repeat type*/}
-            <View>
-                <AppText variant='h2'>
-                    Напоминание
-                </AppText>
-                <RepeatSelector value={repeatType} onChange={setRepeatType} />
-            </View>
+            <AppText variant='h2'>
+                Напоминание
+            </AppText>
+            <RepeatSelector value={repeatType} onChange={setRepeatType} />
+
 
             {/*Conditional on Repeat Type*/}
             {repeatType === REPEAT_TYPE.everyXDays && (
@@ -156,12 +152,12 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             )}
 
             {repeatType === REPEAT_TYPE.weekly && (
-                <View>
+                <>
                     <AppText variant='h2'>
                         Дни недели
                     </AppText>
                     <WeeklySelector value={daysOfWeek} onChange={setDaysOfWeek} />
-                </View>
+                </>
             )}
 
             {repeatType === REPEAT_TYPE.monthly && (
@@ -175,19 +171,17 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
 
 
             {/*Date Range*/}
-            <View>
-                <AppText variant='h2'>
-                    Период
-                </AppText>
-                <DateRangePicker
-                    startDate={startDate}
-                    endDate={endDate}
-                    onChange={(start, end) => {
-                        setStartDate(start)
-                        setEndDate(end)
-                    }}
-                />
-            </View>
+            <AppText variant='h2'>
+                Период
+            </AppText>
+            <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(start, end) => {
+                    setStartDate(start)
+                    setEndDate(end)
+                }}
+            />
 
             {/*Repeat Reminders*/}
             <RepeatReminderSelector
@@ -200,17 +194,15 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
             />
 
             {/*Set Dose*/}
-            <View>
-                <AppText variant='h2'>
-                    Разовая дозировка
-                </AppText>
-                <AppInput
-                    label="Количество единиц"
-                    value={dosage}
-                    onChangeText={setDosage}
-                    keyboardType="numeric"
-                />
-            </View>
+            <AppText variant='h2'>
+                Разовая дозировка
+            </AppText>
+            <AppInput
+                label="Количество единиц"
+                value={dosage}
+                onChangeText={setDosage}
+                keyboardType="numeric"
+            />
 
             {/*Save Button*/}
             <AppButton
@@ -219,6 +211,6 @@ export const ScheduleForm = ({ initialDraft, onSubmit, openDropdown, dropdownOpe
                 onPress={handleSubmit}
                 disabled={!isValid()}
             />
-        </ScrollView>
+        </View>
     )
 }

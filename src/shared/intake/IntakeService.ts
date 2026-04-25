@@ -48,40 +48,56 @@ class IntakeService {
 
     /*------Auto-check skipped intakes (00:00 or when next intake starts)------*/
     async checkMissed(schedule: Schedule, plannedTimes: number[]) {
-        const todayStart = new Date()
-        todayStart.setHours(0, 0, 0, 0)
-        const todayStartTs = todayStart.getTime()
+        const now = Date.now()
 
         for (const plannedTime of plannedTimes) {
+            const startOfDay = new Date(plannedTime)
+            startOfDay.setHours(0, 0, 0, 0)
+
+            const endOfDay = new Date(plannedTime)
+            endOfDay.setHours(23, 59, 59, 999)
+
+            if (now < endOfDay.getTime()) {
+                continue
+            }
+
             const intake = await intakeRepository.findByScheduleAndTime(
                 schedule.id,
                 plannedTime,
             )
 
-            if (!intake) {
-                await intakeRepository.add({
-                    id: uuid.v4.toString(),
-                    productId: schedule.productId,
-                    scheduleId: schedule.id,
-                    time: formatTimeFromTimestamp(plannedTime),
-                    plannedFor: plannedTime,
-                    actualTime: null,
-                    status: 'skipped',
-                    skipReason: 'not_marked',
-                    createdAt: Date.now(),
-                })
+            if (intake && intake.status === "delayed") {
+                if (now > endOfDay.getTime()) {
+
+                    await this.updateIntakeStatus(
+                        intake.scheduleId,
+                        intake.plannedFor,
+                        "skipped",
+                        undefined,
+                        "expired"
+                    )
+                }
+
                 continue
             }
 
-            if (intake.status === "delayed" && plannedTime < todayStartTs) {
-                await this.updateIntakeStatus(
-                    intake.scheduleId,
-                    intake.plannedFor,
-                    "skipped",
-                    undefined,
-                    "expired"
-                )
+            if (intake) {
+                continue
             }
+
+            await intakeRepository.add({
+                id: uuid.v4.toString(),
+                productId: schedule.productId,
+                scheduleId: schedule.id,
+                time: formatTimeFromTimestamp(plannedTime),
+                plannedFor: plannedTime,
+                actualTime: null,
+                status: 'skipped',
+                skipReason: 'not_marked',
+                createdAt: Date.now(),
+            })
+
+
         }
     }
 

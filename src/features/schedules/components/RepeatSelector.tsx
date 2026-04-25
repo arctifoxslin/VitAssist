@@ -1,6 +1,6 @@
 import React from "react";
 import { AppRadioGroup } from "../../../shared/ui/AppRadioGroup";
-import { RepeatType, REPEAT_TYPE, REPEAT_TYPE_LABELS } from "../../../shared/types/repeatRype";
+import { RepeatType, REPEAT_TYPE, REPEAT_TYPE_LABELS } from "../../../shared/types/repeatType";
 
 interface Props {
     value: RepeatType

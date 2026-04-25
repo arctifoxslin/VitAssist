@@ -1,5 +1,5 @@
 import { Schedule } from "../types/Schedule";
-import { REPEAT_TYPE } from "../types/repeatRype";
+import { REPEAT_TYPE } from "../types/repeatType";
 
 function generatePlannedIntakes(schedule: Schedule): number[] {
     const scheduleStart = new Date(schedule.startDate)

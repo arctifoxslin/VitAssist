@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { FlatList, View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { AppCard } from "../../../shared/ui/AppCard";
@@ -13,11 +13,18 @@ import { selectActiveProducts } from "../../products/productsSelectors";
 import { getTodayIntake } from "../utils/getTodayIntake";
 import { intakeService } from "../../../shared/intake/IntakeService";
 import { Intake } from "../../../shared/types/Intake";
+import { AppScreen } from "../../../shared/ui/AppScreen";
 
 type Navigation = NativeStackNavigationProp<IntakeNavigationStack>
 
 export const TodayIntakeScreen = () => {
     const navigation = useNavigation<Navigation>()
+
+    useLayoutEffect(() => {
+        navigation.getParent()?.setOptions({
+            headerTitle: "Приёмы на сегодня"
+        })
+    }, [])
 
     const schedules = useSelector((state: RootState) =>
         state.schedules.list
@@ -36,9 +43,7 @@ export const TodayIntakeScreen = () => {
     }, [])
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener("focus", () => {
-            load()
-        })
+        const unsubscribe = navigation.addListener("focus", load)
         return unsubscribe
     }, [navigation])
 
@@ -46,44 +51,44 @@ export const TodayIntakeScreen = () => {
         (a, b) => a.plannedFor - b.plannedFor || a.productId.localeCompare(b.productId)
     )
 
-    const vivibleItems = plannedItems.filter(item => {
-        return !todayIntakes.some(i =>
+    const visibleItems = plannedItems.filter(item => {
+        const intake = todayIntakes.find(i =>
             i.scheduleId === item.scheduleId &&
             i.plannedFor === item.plannedFor
         )
+        if (!intake) return true
+        return intake/*.status !== "taken" && intake.status !== "skipped"*/
     })
 
     return (
-        <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-            {vivibleItems.length === 0 && (
+        <AppScreen>
+            {visibleItems.length === 0 && (
                 <AppText variant="title" style={{ textAlign: "center" }}>
                     На сегодня приёмов нет
                 </AppText>
             )}
-            {vivibleItems.map(item => {
-                const product = products.find(p => p.id === item.productId)
-                const intake = todayIntakes.find(i => (
-                    i.scheduleId === item.scheduleId &&
-                    i.plannedFor === item.plannedFor
-                ))
-
-                const statusInfo = intake ? getIntakeStatus(intake.status) : null
-                return (
-                    <AppCard key={`${item.scheduleId} - ${item.time}`} style={{ padding: 16 }}>
-                        <View style={{
-                            width: 6,
-                            borderRadius: 3,
-                            backgroundColor: statusInfo?.color ?? "#DBDBDB"
-                        }} />
-                        <View style={{ flex: 1 }}>
-                            <AppText variant='h2'>
-                                {product?.name}
-                            </AppText>
-                            <AppText style={{ opacity: 0.7 }}>
-                                Время: {item.time}
-                            </AppText>
-
-                            {statusInfo?.text === "taken" ? (
+            <FlatList
+                data={visibleItems}
+                contentContainerStyle={{ padding: 16, gap: 12 }}
+                keyExtractor={(item) => `${item.scheduleId}-${item.plannedFor}`}
+                renderItem={({ item }) => {
+                    const product = products.find(p => p.id === item.productId)
+                    const intake = todayIntakes.find(i => (
+                        i.scheduleId === item.scheduleId &&
+                        i.plannedFor === item.plannedFor
+                    ))
+                    const statusInfo = intake ? getIntakeStatus(intake.status) : null
+                    return (
+                        <AppCard row={true}>
+                            <View>
+                                <AppText variant='h2'>
+                                    {product?.name}
+                                </AppText>
+                                <AppText variant="body">
+                                    Время: {item.time}
+                                </AppText>
+                            </View>
+                            {statusInfo ? (
                                 <AppText style={{
                                     marginTop: 8,
                                     color: statusInfo.color,
@@ -103,10 +108,10 @@ export const TodayIntakeScreen = () => {
                                         )}
                                 />
                             )}
-                        </View>
-                    </AppCard>
-                )
-            })}
-        </ScrollView>
+                        </AppCard>
+                    )
+                }}
+            />
+        </AppScreen>
     )
 }

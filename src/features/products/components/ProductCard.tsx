@@ -16,25 +16,23 @@ export const ProductCard = ({ product, onPress }: Props) => {
     const formTypeLabel = FORM_LABELS[product.form]
     return (
         <Pressable onPress={onPress}>
-            <AppCard style={{ marginBottom: 12, gap: 12 }}>
+            <AppCard>
                 <View>
                     <AppText variant="title">
                         {product.name}
                     </AppText>
-                    <AppText variant="subtitle" color="#666">
+                    <AppText variant="subtitle">
                         Активного вещества: {product.dosage}
                     </AppText>
-                    <AppText variant="subtitle" color="#666">
+                    <AppText variant="subtitle">
                         Форма препарата: {formTypeLabel}
                     </AppText>
                 </View>
-                <View>
-                    {isCountableUnit(product.unitType) && (
-                        <AppText>
-                            {`Осталось: ${product.remainingUnits} (${unitTypeLabel})`}
-                        </AppText>
-                    )}
-                </View>
+                {isCountableUnit(product.unitType) && (
+                    <AppText variant="small">
+                        {`Осталось: ${product.remainingUnits} (${unitTypeLabel})`}
+                    </AppText>
+                )}
             </AppCard>
         </Pressable>
     )

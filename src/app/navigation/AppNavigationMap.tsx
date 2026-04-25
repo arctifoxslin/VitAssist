@@ -10,21 +10,7 @@ import { LeftSideBar } from "../../features/app/LeftSideBar";
 import { navigationRef } from "./NavigationRef";
 import { AppHeader } from "../../shared/ui/AppHeader";
 
-
 const Stack = createNativeStackNavigator<AppNavigationStack>()
-
-const getTitle = (routeName: keyof AppNavigationStack) => {
-    switch(routeName) {
-        case "ScheduleNavigationMap":
-            return "Расписания"
-        case "ProductsNavigationMap":
-            return "Препараты"
-        case "IntakeNavigationMap":
-            return "Приёмы на сегодня"
-        default:
-            return ""
-    }
-}
 
 const AppNavigationMap = () => {
     const [menuOpen, setMenuOpen] = useState(false)
@@ -32,15 +18,15 @@ const AppNavigationMap = () => {
         <NavigationContainer ref={navigationRef}>
             <View style={{ flex: 1 }}>
                 <LeftSideBar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-                <Stack.Navigator 
-                    screenOptions={{
-                        header: ({route}) => (
+                <Stack.Navigator
+                    screenOptions={({ route, navigation }) => ({
+                        header: ({ options }) => (
                             <AppHeader
-                                title={getTitle(route.name as keyof AppNavigationStack)}
+                                title={options.headerTitle as string}
                                 onMenuPress={() => setMenuOpen(true)}
                             />
                         )
-                    }}
+                    })}
                 >
                     <Stack.Screen
                         name="ScheduleNavigationMap"
@@ -54,9 +40,9 @@ const AppNavigationMap = () => {
                         name="IntakeNavigationMap"
                         component={IntakeNavigationMap}
                     />
-                    </Stack.Navigator>
-                
-            </View>            
+                </Stack.Navigator>
+
+            </View>
         </NavigationContainer>
     )
 }

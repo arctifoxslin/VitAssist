@@ -1,4 +1,4 @@
-import { RepeatType } from "./repeatRype"
+import { RepeatType } from "./repeatType"
 export interface Schedule {
     id: string
     productId: string

@@ -14,13 +14,7 @@ interface Props {
 export const AppChip = ({ label, selected = false, onPress, onClose }: Props) => {
     return (
         <View style={[styles.chip, selected && styles.chipSelected]}>
-            <Pressable
-                onPress={onPress}
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center"
-                }}
-            >
+            <Pressable onPress={onPress}>
                 <AppText style={{
                     color: selected ? COLORS.background : COLORS.textPrimary,
                     fontWeight: "500",
@@ -29,7 +23,7 @@ export const AppChip = ({ label, selected = false, onPress, onClose }: Props) =>
                 </AppText>
             </Pressable>
             {onClose && (
-                <Pressable onPress={onClose} style={styles.closeButton}>
+                <Pressable onPress={onClose}>
                     <Icon
                         name="x"
                         size={14}
@@ -49,12 +43,12 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.surface,
         borderWidth: 1,
         borderColor: COLORS.border,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
     },
     chipSelected: {
         backgroundColor: COLORS.primary,
         borderColor: COLORS.primary,
     },
-    closeButton: {
-        padding: 4,
-    }
 })
