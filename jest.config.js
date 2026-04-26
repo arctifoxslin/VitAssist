@@ -9,6 +9,8 @@ module.exports = {
   moduleNameMapper: {
     "^react-native$": "<rootDir>/__mocks__/react-native.js",
     "^@notifee/react-native$": "<rootDir>/__mocks__/@notifee/react-native.js",
+    "^@react-navigation/native$": "<rootDir>/__mocks__/@react-navigation/native.js",
+    "^@react-navigation/native-stack$": "<rootDir>/__mocks__/@react-navigation/native-stack.js",
   },
   setupFilesAfterEnv: ["@testing-library/jest-native/extend-expect"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
