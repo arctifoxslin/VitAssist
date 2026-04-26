@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { intakeService } from "../../../shared/intake/IntakeService";
@@ -22,13 +22,13 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
     const { scheduleId } = route.params
     const [missed, setMissed] = useState<Intake[]>([])
 
-    const load = async () => {
+    const load = useCallback(async () => {
         const all = await intakeRepository.findBySchedule(scheduleId)
         const filtered = all
             .filter(i => i.status === "skipped")
             .sort((a, b) => a.plannedFor - b.plannedFor)
         setMissed(filtered)
-    }
+    }, [scheduleId])
 
     useEffect(() => {
         load()
