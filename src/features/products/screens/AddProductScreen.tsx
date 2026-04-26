@@ -9,7 +9,6 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ProductsNavigationStack } from "../ProductsNavigationStack";
 import { AppDispatch } from "../../../app/store/store";
 import uuid from "react-native-uuid";
-import { DropdownMenu, DropdownItem } from "../../../shared/ui/DropdownMenu";
 import { selectActiveProducts } from "../productsSelectors";
 import { isCountableUnit } from "../../../shared/types/countableUnits";
 import { AppScreen } from "../../../shared/ui/AppScreen";
@@ -40,27 +39,6 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
         unitType: existProduct.unitType ?? UNIT_TYPES_BY_FORM[existProduct.form][0],
         notes: existProduct.notes,
     } : undefined
-
-    const [dropdownVisible, setDropdownVisible] = useState(false)
-    const [dropdownItems, setDropdownItems] = useState<DropdownItem[]>([])
-    const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 })
-    const [dropdownOwner, setDropdownOwner] = useState<null | 'form' | 'unitType'>(null)
-
-    const openDropdown = (
-        owner: 'form' | 'unitType',
-        items: DropdownItem[],
-        position: { x: number, y: number }
-    ) => {
-        setDropdownOwner(owner)
-        setDropdownItems(items)
-        setDropdownPosition(position)
-        setDropdownVisible(true)
-    }
-
-    const closeDropdown = () => {
-        setDropdownVisible(false)
-        setDropdownOwner(null)
-    }
 
     const handleSubmit = (draft: ProductDraft) => {
         const product: Product = {
@@ -107,14 +85,6 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
                     />
                 )}
             </AppScreen>
-
-
-            <DropdownMenu
-                visible={dropdownVisible}
-                items={dropdownItems}
-                position={dropdownPosition}
-                onClose={closeDropdown}
-            />
         </>
     )
 }

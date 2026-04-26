@@ -5,7 +5,6 @@ import { AppInput } from "../../../shared/ui/AppInput";
 import { AppButton } from "../../../shared/ui/AppButton";
 import { ProductDraft } from "../../../shared/types/Product";
 import { FormUnitType, UnitType, UNIT_TYPES_BY_FORM, FORM_LABELS, UNIT_TYPE_LABELS } from "../../../shared/types/units";
-import { DropdownItem } from "../../../shared/ui/DropdownMenu";
 import { isCountableUnit } from "../../../shared/types/countableUnits";
 import { AppSelect } from "../../../shared/ui/AppSelect";
 
@@ -104,7 +103,6 @@ export const ProductForm = ({
                 options={formOptions}
                 onChange={(v) => handleFormChange(v as FormUnitType)}
             />
-
 
             {shouldShowUnitType && (
                 <>

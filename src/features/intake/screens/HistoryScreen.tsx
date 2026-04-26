@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, useLayoutEffect } from "react";
+import React, { useState, useMemo, useEffect, useLayoutEffect } from "react";
 import { View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { useSelector } from "react-redux";

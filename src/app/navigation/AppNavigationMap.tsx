@@ -19,7 +19,7 @@ const AppNavigationMap = () => {
             <View style={{ flex: 1 }}>
                 <LeftSideBar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
                 <Stack.Navigator
-                    screenOptions={({ route, navigation }) => ({
+                    screenOptions={({ route: _route, navigation: _navigation }) => ({
                         header: ({ options }) => (
                             <AppHeader
                                 title={options.headerTitle as string}

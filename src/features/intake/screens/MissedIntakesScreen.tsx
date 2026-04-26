@@ -18,12 +18,9 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
             headerTitle: "Пропущенные приёмы"
         })
     }, [navigation])
+
     const { scheduleId } = route.params
     const [missed, setMissed] = useState<Intake[]>([])
-
-    useEffect(() => {
-        load()
-    }, [])
 
     const load = async () => {
         const all = await intakeRepository.findBySchedule(scheduleId)
@@ -32,6 +29,10 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
             .sort((a, b) => a.plannedFor - b.plannedFor)
         setMissed(filtered)
     }
+
+    useEffect(() => {
+        load()
+    }, [load])
 
     const markAsTaken = async (intake: Intake) => {
         await intakeService.updateIntakeStatus(
