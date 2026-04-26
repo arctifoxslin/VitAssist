@@ -8,7 +8,6 @@ import { AppButton } from "../../../shared/ui/AppButton";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { buildScheduleMatrix } from "../utils/buildScheduleMatrix";
 import { getIntakeStatus, INTAKE_STATUS } from "../../../shared/types/intakeStatus";
-import { calcScheduleProgress } from "../utils/calcScheduleProgress";
 import { useNavigation } from "@react-navigation/native";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -24,9 +23,7 @@ type Props = {
 export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
     const navigation = useNavigation<Navigation>()
     const [expanded, setExpanded] = useState(false)
-    const [showDetails, setShowDetails] = useState(false)
     const hasMissed = intakes.some(i => i.status === "skipped")
-    const progress = calcScheduleProgress(intakes)
 
     const matrix = buildScheduleMatrix(schedule, intakes)
 
@@ -227,49 +224,6 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                         scheduleId: schedule.id,
                     })}
                 />
-            )}
-            {/*DETAILS*/}
-            <AppButton
-                title={showDetails ? "Скрыть детали" : "Подробнее"}
-                onPress={() => setShowDetails(!showDetails)}
-            />
-            {showDetails && (
-                <View style={{ marginTop: 12, gap: 6 }}>
-                    <AppText variant='body' style={{ fontWeight: "600" }}>
-                        Детали курса
-                    </AppText>
-                    <AppText>
-                        Дозировка: {product.dosage ?? "-"}
-                    </AppText>
-                    <AppText>
-                        Приёмов в день: {schedule.times.length}
-                    </AppText>
-                    <AppText>
-                        Всего приёмов: {intakes.length}
-                    </AppText>
-
-                    <AppText variant="body" style={{ fontWeight: "600" }}>
-                        Выполнено: {progress}%
-                    </AppText>
-                    <AppText>
-                        Принято: {intakes.filter(i => i.status === "taken").length}
-                    </AppText>
-                    <AppText>
-                        Отложено: {intakes.filter(i => i.status === "delayed").length}
-                    </AppText>
-                    <AppText>
-                        Пропущено: {intakes.filter(i => i.status === "skipped").length}
-                    </AppText>
-                    <AppText>
-                        Длительность курса: {
-                            schedule.endDate
-                                ? Math.ceil(
-                                    (schedule.endDate - schedule.startDate) / (1000 * 60 * 60 * 24)
-                                ) + "дней"
-                                : "не установлено"
-                        }
-                    </AppText>
-                </View>
             )}
         </AppCard>
     )
