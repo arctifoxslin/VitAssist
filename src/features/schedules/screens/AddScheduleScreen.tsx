@@ -19,7 +19,7 @@ export const AddScheduleScreen = ({ navigation, route }: Props) => {
         navigation.getParent()?.setOptions({
             headerTitle: "Новое расписание"
         })
-    }, [])
+    }, [navigation])
     const dispatch = useDispatch<AppDispatch>()
 
     const editId = route.params?.id

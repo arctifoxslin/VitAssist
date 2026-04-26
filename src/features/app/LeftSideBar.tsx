@@ -26,7 +26,7 @@ export const LeftSideBar = ({ menuOpen, setMenuOpen }: Props) => {
             duration: 350,
             useNativeDriver: true,
         }).start()
-    }, [menuOpen])
+    }, [menuOpen, slideX, screenWidth])
     return (
         <>
             {menuOpen && (

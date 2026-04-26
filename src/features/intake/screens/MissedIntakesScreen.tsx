@@ -17,7 +17,7 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
         navigation.getParent()?.setOptions({
             headerTitle: "Пропущенные приёмы"
         })
-    }, [])
+    }, [navigation])
     const { scheduleId } = route.params
     const [missed, setMissed] = useState<Intake[]>([])
 

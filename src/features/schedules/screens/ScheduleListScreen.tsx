@@ -17,7 +17,7 @@ export const ScheduleListScreen = () => {
         navigation.getParent()?.setOptions({
             headerTitle: "Все расписания"
         })
-    }, [])
+    }, [navigation])
     const schedules = useSelector(
         (state: RootState) => state.schedules.list
     )

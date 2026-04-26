@@ -20,7 +20,7 @@ export const IntakeScreen = ({ navigation, route }: Props) => {
         navigation.getParent()?.setOptions({
             headerTitle: "Отметить приём"
         })
-    }, [])
+    }, [navigation])
 
     const { scheduleId, plannedTime } = route.params
 

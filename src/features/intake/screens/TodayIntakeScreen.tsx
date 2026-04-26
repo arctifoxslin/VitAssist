@@ -24,7 +24,7 @@ export const TodayIntakeScreen = () => {
         navigation.getParent()?.setOptions({
             headerTitle: "Приёмы на сегодня"
         })
-    }, [])
+    }, [navigation])
 
     const schedules = useSelector((state: RootState) =>
         state.schedules.list

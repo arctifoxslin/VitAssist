@@ -19,7 +19,7 @@ export const ArchivedProductsScreen = () => {
         navigation.getParent()?.setOptions({
             headerTitle: "Архив препаратов"
         })
-    }, [])
+    }, [navigation])
     const dispatch = useDispatch()
 
     const archivedProducts = useSelector(selectArchivedProducts)

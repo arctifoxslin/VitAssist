@@ -14,7 +14,6 @@ import { navigationRef } from './src/app/navigation/NavigationRef'; import { sto
 import { intakeService } from './src/shared/intake/IntakeService';
 import { getPastIntakes } from './src/shared/utils/generatePlannedIntakes';
 import { notificationService } from './src/shared/notifications/NotificationService';
-import { productRepository } from './src/shared/product/ProductRepository';
 
 export default function App() {
   useEffect(() => {

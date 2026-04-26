@@ -21,7 +21,7 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
         navigation.getParent()?.setOptions({
             headerTitle: "Новый препарат"
         })
-    }, [])
+    }, [navigation])
 
     const dispatch = useDispatch<AppDispatch>()
 
@@ -97,9 +97,6 @@ export const AddProductScreen = ({ navigation, route }: Props) => {
                 <ProductForm
                     initialDraft={initialDraft}
                     onSubmit={handleSubmit}
-                    openDropdown={openDropdown}
-                    dropdownOpen={dropdownVisible}
-                    dropdownOwner={dropdownOwner}
                 />
 
                 {editId && (

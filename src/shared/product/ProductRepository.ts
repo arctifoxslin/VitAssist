@@ -51,7 +51,7 @@ class ProductRepository {
         const updated = list.map(p => p.id === item.id ? item : p)
 
         console.log("[ProductRepository] Updated: ", item.id)
-        await this.saveAll(list)
+        await this.saveAll(updated)
     }
 
     /*------Find product by id------*/

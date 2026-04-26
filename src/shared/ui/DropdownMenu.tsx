@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Pressable, StyleSheet, View, Dimensions, ScrollView } from "react-native";
+import { Animated, Pressable, StyleSheet, Dimensions, ScrollView } from "react-native";
 import { COLORS } from "./theme/colors";
 import { AppText } from "./AppText";
 
@@ -44,7 +44,7 @@ export const DropdownMenu = ({ visible, items, position, onClose }: Props) => {
             opacity.setValue(0)
             scale.setValue(0.95)
         }
-    }, [visible])
+    }, [visible, opacity, scale])
 
     if (!visible) {
         return null

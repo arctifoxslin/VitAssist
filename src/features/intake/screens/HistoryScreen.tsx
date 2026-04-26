@@ -21,7 +21,7 @@ export const HistoryScreen = () => {
         navigation.getParent()?.setOptions({
             headerTitle: "История приёмов"
         })
-    }, [])
+    }, [navigation])
 
     const schedules = useSelector((state: RootState) =>
         state.schedules.list
@@ -32,21 +32,18 @@ export const HistoryScreen = () => {
 
     const [historyMap, setHistoryMap] = useState<Record<string, any[]>>({})
 
-    useEffect(
-        useCallback(() => {
-            const load = async () => {
-                const map: Record<string, any[]> = {}
+    useEffect(() => {
+        const load = async () => {
+            const map: Record<string, any[]> = {}
 
-                for (const s of schedules) {
-                    const list = await intakeService.getHistory(s.id)
-                    map[s.id] = list
-                }
-                setHistoryMap(map)
+            for (const s of schedules) {
+                const list = await intakeService.getHistory(s.id)
+                map[s.id] = list
             }
-            load()
-
-        }, [])
-    )
+            setHistoryMap(map)
+        }
+        load()
+    }, [schedules])
 
     // Screen filters
     const years = getYearsFromSchedule(schedules)

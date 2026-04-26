@@ -1,7 +1,5 @@
 import React from "react"
 import { View, ScrollView, StyleSheet } from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { COLORS } from "./theme/colors"
 
 interface Props {
     children: React.ReactNode

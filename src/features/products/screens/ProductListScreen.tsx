@@ -18,7 +18,7 @@ export const ProductListScreen = () => {
         navigation.getParent()?.setOptions({
             headerTitle: "Препараты"
         })
-    }, [])
+    }, [navigation])
     const products = useSelector(selectActiveProducts)
 
     useLayoutEffect(() => {

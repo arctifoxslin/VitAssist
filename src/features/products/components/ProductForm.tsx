@@ -12,21 +12,11 @@ import { AppSelect } from "../../../shared/ui/AppSelect";
 interface Props {
     initialDraft?: ProductDraft
     onSubmit: (draft: ProductDraft) => void
-    openDropdown: (
-        owner: 'form' | 'unitType',
-        items: DropdownItem[],
-        position: { x: number, y: number }
-    ) => void
-    dropdownOpen: boolean
-    dropdownOwner: 'form' | 'unitType' | null
 }
 
 export const ProductForm = ({
     initialDraft: initialDraft,
     onSubmit,
-    openDropdown,
-    dropdownOpen,
-    dropdownOwner,
 }: Props) => {
     const [name, setName] = useState('')
     const [dosage, setDosage] = useState('')
