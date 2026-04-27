@@ -1,7 +1,10 @@
 module.exports = {
   testEnvironment: "jsdom",
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    "^.+\\.(js|jsx|ts|tsx)$": [
+      "babel-jest",
+      { configFile: "./jest.babel.config.js" }
+    ],
   },
   transformIgnorePatterns: [
     "node_modules/(?!(react-redux|@reduxjs|redux-persist|immer)/)",
