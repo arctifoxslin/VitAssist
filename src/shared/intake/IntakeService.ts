@@ -3,6 +3,7 @@ import { notificationService } from "../notifications/NotificationService";
 import uuid from 'react-native-uuid';
 import { Schedule } from "../types/Schedule";
 import { formatTimeFromTimestamp } from "../utils/formatTimeFromTimestamp";
+import { buildAllPlannedTimes } from "../../features/intake/utils/buildScheduleMatrix";
 
 class IntakeService {
     /*------User pressed taken------*/
@@ -138,6 +139,31 @@ class IntakeService {
     async getHistory(scheduleId: string) {
         const list = await intakeRepository.findBySchedule(scheduleId)
         return list.sort((a, b) => a.plannedFor - b.plannedFor)
+    }
+
+    async ensurePastIntakes(schedule: Schedule) {
+        const now = Date.now()
+        const plannedTimes = buildAllPlannedTimes(schedule)
+
+        for (const plannedTime of plannedTimes) {
+            if (plannedTime >= now) continue
+
+            const exists = await intakeRepository.findByScheduleAndTime(schedule.id, plannedTime)
+
+            if (exists) continue
+
+            await intakeRepository.add({
+                id: uuid.v4.toString(),
+                productId: schedule.productId,
+                scheduleId: schedule.id,
+                time: formatTimeFromTimestamp(plannedTime),
+                plannedFor: plannedTime,
+                actualTime: null,
+                status: 'skipped',
+                skipReason: "not_marked",
+                createdAt: now,
+            })
+        }
     }
 }
 

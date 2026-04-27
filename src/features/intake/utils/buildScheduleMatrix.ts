@@ -87,3 +87,20 @@ export function buildScheduleMatrix(
 
     return { days, times, cells }
 }
+
+export function buildAllPlannedTimes(shedule: Schedule) {
+    const matrix = buildScheduleMatrix(shedule, [])
+    const times: number[] = []
+
+    for (const day of matrix.days) {
+        const dayKey = day.toDateString()
+        for (const time of matrix.times) {
+            const cell = matrix.cells[dayKey]?.[time]
+            if (cell) {
+                times.push(cell.plannedFor)
+            }
+        }
+    }
+
+    return times
+}

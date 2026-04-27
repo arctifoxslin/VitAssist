@@ -8,6 +8,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Schedule } from "../../shared/types/Schedule";
 import { notificationService } from "../../shared/notifications/NotificationService";
+import { intakeService } from "../../shared/intake/IntakeService";
 
 interface SchedulesState {
     list: Schedule[]
@@ -44,6 +45,7 @@ export const createScheduleThunk = createAsyncThunk(
     async (schedule: Schedule, { dispatch }) => {
         dispatch(addSchedule(schedule))
         await notificationService.onScheduleCreated(schedule)
+        await intakeService.ensurePastIntakes(schedule)
     }
 )
 
@@ -53,6 +55,7 @@ export const updateScheduleThunk = createAsyncThunk(
         dispatch(updateSchedule(schedule))
         await notificationService.cancelForSchedule(schedule.id)
         await notificationService.onScheduleCreated(schedule)
+        await intakeService.ensurePastIntakes(schedule)
     }
 )
 
