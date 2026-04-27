@@ -7,4 +7,5 @@ export const TYPOGRAPHY = {
   body: { fontSize: 15, fontWeight: '400', lineHeight: 20 },
   small: { fontSize: 13, fontWeight: '400', lineHeight: 18 },
   caption: { fontSize: 12, fontWeight: '400', lineHeight: 16 },
+  legend: { fontSize: 10, fontWeight: "400", lineHeight: 10 },
 } as const

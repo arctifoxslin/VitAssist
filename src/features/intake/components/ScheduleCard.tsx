@@ -11,6 +11,7 @@ import { getIntakeStatus, INTAKE_STATUS } from "../../../shared/types/intakeStat
 import { useNavigation } from "@react-navigation/native";
 import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { COLORS } from "../../../shared/ui/theme/colors";
 
 type Navigation = NativeStackNavigationProp<IntakeNavigationStack, "HistoryScreen">
 
@@ -84,11 +85,7 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
 
     return (
         <AppCard style={{
-            padding: 16,
-            gap: 12,
-            borderRadius: 12,
-            backgroundColor: "white",
-            elevation: 2
+            backgroundColor: COLORS.background,
         }}>
             {/*HEADER*/}
             <AppText variant='h2'>
@@ -110,21 +107,26 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                 gap: 16,
                 marginTop: 12,
                 flexWrap: "wrap",
+
             }}>
                 {Object.entries(INTAKE_STATUS).map(([key, info]) => (
                     <View
                         key={key}
-                        style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 6
+                        }}
                     >
                         <View style={{
                             width: 16,
                             height: 16,
                             borderRadius: 8,
                             backgroundColor: info.color,
+                            alignItems: "center",
                             justifyContent: "center",
-                            alignItems: "center"
                         }}>
-                            <AppText style={{ color: "white", fontSize: 10 }}>
+                            <AppText variant="legend" style={{ color: COLORS.background }}>
                                 {info.icon}
                             </AppText>
                         </View>
