@@ -79,8 +79,8 @@ export const TodayIntakeScreen = () => {
                     ))
                     const statusInfo = intake ? getIntakeStatus(intake.status) : null
                     return (
-                        <AppCard row={true}>
-                            <View>
+                        <AppCard row>
+                            <View style={{ flex: 1, flexShrink: 1 }}>
                                 <AppText variant='h2'>
                                     {product?.name}
                                 </AppText>
@@ -89,24 +89,28 @@ export const TodayIntakeScreen = () => {
                                 </AppText>
                             </View>
                             {statusInfo ? (
-                                <AppText style={{
-                                    marginTop: 8,
-                                    color: statusInfo.color,
-                                    fontWeight: "600"
-                                }}>
-                                    Статус приёма: {statusInfo.text}
-                                </AppText>
+                                <View style={{ flex: 1, flexShrink: 1 }}>
+                                    <AppText style={{
+                                        marginTop: 8,
+                                        color: statusInfo.color,
+                                        fontWeight: "600"
+                                    }}>
+                                        Статус приёма: {statusInfo.text}
+                                    </AppText>
+                                </View>
                             ) : (
-                                <AppButton
-                                    title="Отметить приём"
-                                    variant="primary"
-                                    onPress={() =>
-                                        navigation.navigate("IntakeScreen", {
-                                            scheduleId: item.scheduleId,
-                                            plannedTime: item.plannedFor,
-                                        }
-                                        )}
-                                />
+                                <View style={{ flex: 1, flexShrink: 1 }}>
+                                    <AppButton
+                                        title="Отметить приём"
+                                        variant="primary"
+                                        onPress={() =>
+                                            navigation.navigate("IntakeScreen", {
+                                                scheduleId: item.scheduleId,
+                                                plannedTime: item.plannedFor,
+                                            }
+                                            )}
+                                    />
+                                </View>
                             )}
                         </AppCard>
                     )

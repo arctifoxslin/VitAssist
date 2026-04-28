@@ -4,7 +4,7 @@ import { IntakeNavigationStack } from "../IntakeNavigationStack";
 import { intakeService } from "../../../shared/intake/IntakeService";
 import { intakeRepository } from "../../../shared/intake/IntakeRepository";
 import { Intake } from "../../../shared/types/Intake";
-import { FlatList } from "react-native";
+import { FlatList, View } from "react-native";
 import { AppText } from "../../../shared/ui/AppText";
 import { AppCard } from "../../../shared/ui/AppCard";
 import { AppButton } from "../../../shared/ui/AppButton";
@@ -61,7 +61,7 @@ export const MissedIntakesScreen = ({ navigation, route }: Props) => {
                 keyExtractor={(item) => `${item.scheduleId}-${item.plannedFor}`}
                 renderItem={({ item }) => (
                     <AppCard row={true}>
-                        <AppText variant="h3">
+                        <AppText variant="title" style={{ flexShrink: 1 }}>
                             {new Date(item.plannedFor).toLocaleString("ru-RU", {
                                 day: "2-digit",
                                 month: "2-digit",

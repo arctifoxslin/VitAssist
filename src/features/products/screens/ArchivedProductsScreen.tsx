@@ -44,7 +44,7 @@ export const ArchivedProductsScreen = () => {
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <AppCard row={true}>
-                        <View>
+                        <View style={{ flexShrink: 1 }}>
                             <AppText variant="h3">
                                 {item.name}
                             </AppText>
@@ -54,11 +54,13 @@ export const ArchivedProductsScreen = () => {
                                 </AppText>
                             )}
                         </View>
-                        <AppButton
-                            title="Вернуть в список"
-                            variant='primary'
-                            onPress={() => handleUnarchive(item.id)}
-                        />
+                        <View style={{ flexShrink: 1 }}>
+                            <AppButton
+                                title="Вернуть в список"
+                                variant='primary'
+                                onPress={() => handleUnarchive(item.id)}
+                            />
+                        </View>
                     </AppCard>
 
                 )}

@@ -17,6 +17,7 @@ interface Props {
 export const LeftSideBar = ({ menuOpen, setMenuOpen }: Props) => {
     const navigation = useNavigation<AppNavigation>()
     const screenWidth = Dimensions.get("window").width
+    const maxWidth = screenWidth * 0.8
 
     const slideX = useRef(new Animated.Value(-screenWidth)).current
 
@@ -48,13 +49,14 @@ export const LeftSideBar = ({ menuOpen, setMenuOpen }: Props) => {
                 left: 0,
                 top: 0,
                 bottom: 0,
-                width: 260,
+                minWidth: 260,
+                maxWidth: maxWidth,
                 backgroundColor: "#eee",
                 padding: 16,
                 justifyContent: "space-between",
                 elevation: 8,
                 zIndex: 50,
-                transform: [{ translateX: slideX }]
+                transform: [{ translateX: slideX }],
             }}>
                 <View style={{ gap: 24 }}>
                     <Icon name="user" size={28} />

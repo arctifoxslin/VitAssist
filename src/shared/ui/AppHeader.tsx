@@ -26,7 +26,7 @@ export const AppHeader = ({ title, onMenuPress }: Props) => {
 
 const styles = StyleSheet.create({
     container: {
-        height: 56,
+        minHeight: 56,
         paddingHorizontal: 12,
         flexDirection: "row",
         alignItems: "center",

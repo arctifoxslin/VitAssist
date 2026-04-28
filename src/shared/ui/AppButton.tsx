@@ -98,7 +98,7 @@ const getStyles = (variant: Variant, disabled: boolean) => {
 
     return StyleSheet.create({
         button: {
-            height: 48,
+            minHeight: 48,
             borderRadius: 12,
             backgroundColor: disabled
                 ? COLORS.textDisabled
@@ -106,6 +106,7 @@ const getStyles = (variant: Variant, disabled: boolean) => {
             justifyContent: "center",
             alignItems: "center",
             paddingHorizontal: 16,
+            paddingVertical: 8,
         },
 
         text: {

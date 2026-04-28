@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store/store";
 import { getYearsFromSchedule } from "../utils/getYearsFromSchedule";
 import { getMonthsFromSchecule } from "../utils/getMonthsFromSchedule";
-import { ScheduleCard } from "../components/ScheduleCard";
+import { HistoryCard } from "../components/HistoryCard";
 import { intakeService } from "../../../shared/intake/IntakeService";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -152,7 +152,7 @@ export const HistoryScreen = () => {
                                 return null
                             }
                             return (
-                                <ScheduleCard
+                                <HistoryCard
                                     key={s.id}
                                     schedule={s}
                                     product={product}

@@ -21,7 +21,7 @@ type Props = {
     intakes: Intake[]
 }
 
-export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
+export const HistoryCard = ({ schedule, product, intakes }: Props) => {
     const navigation = useNavigation<Navigation>()
     const [expanded, setExpanded] = useState(false)
     const hasMissed = intakes.some(i => i.status === "skipped")
@@ -58,8 +58,8 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
         if (!info) {
             return (
                 <View style={{
-                    width: 14,
-                    height: 14,
+                    minWidth: 14,
+                    minHeight: 14,
                     borderRadius: 7,
                     borderWidth: 1,
                     borderColor: "#ccc",
@@ -70,8 +70,8 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
 
         return (
             <View style={{
-                width: 20,
-                height: 20,
+                minWidth: 20,
+                minHeight: 20,
                 borderRadius: 10,
                 justifyContent: "center",
                 alignItems: "center",
@@ -119,8 +119,8 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                         }}
                     >
                         <View style={{
-                            width: 16,
-                            height: 16,
+                            minWidth: 16,
+                            minHeight: 16,
                             borderRadius: 8,
                             backgroundColor: info.color,
                             alignItems: "center",
@@ -131,7 +131,7 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                             </AppText>
                         </View>
 
-                        <AppText variant="small" style={{ opacity: 0.8 }}>
+                        <AppText variant="small" style={{ opacity: 0.7 }}>
                             {info.text}
                         </AppText>
                     </View>
@@ -183,12 +183,13 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
                                 }}>
                                     {/*DAY HEADERS*/}
                                     <View style={{
-                                        height: 36,
+                                        minHeight: 36,
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                         backgroundColor: "#f3f3f3",
                                         borderBottomWidth: 1,
                                         borderColor: '#e0e0e0',
+                                        paddingHorizontal: 8,
                                     }}>
                                         <AppText variant='small'>
                                             {formatDay(day)}
@@ -201,8 +202,8 @@ export const ScheduleCard = ({ schedule, product, intakes }: Props) => {
 
                                         return (
                                             <View key={time} style={{
-                                                height: 40,
-                                                width: 40,
+                                                minHeight: 40,
+                                                minWidth: 40,
                                                 justifyContent: 'center',
                                                 alignItems: 'center',
                                                 borderBottomWidth: 1,

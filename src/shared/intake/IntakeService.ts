@@ -148,7 +148,7 @@ class IntakeService {
         for (const plannedTime of plannedTimes) {
             if (plannedTime >= now) continue
 
-            const exists = await intakeRepository.findByScheduleAndTime(schedule.id, plannedTime)
+            const exists = await intakeRepository.checkIntakeExists(schedule.id, plannedTime)
 
             if (exists) continue
 
